@@ -16,13 +16,10 @@ function onSubmit() {
   awaiting.value = true
   auth.signIn(email.value || '', password.value || '', () => {
 		awaiting.value = false
-		console.log('fez login')	
-		// window.location.reload()
 		router.push('/')
     }, 
 		() => {
-			awaiting.value = false			
-			console.log('nao foi dessa vez')																			
+			awaiting.value = false																	
 		}
 	)
 }
