@@ -1,17 +1,33 @@
 <script setup lang="ts">
 
+import router from '@/router';
 import { ref } from 'vue';
+import { Auth } from '@/auth'
+
+const auth = new Auth()
 
 const email = defineModel<string>('email')
 const password =  defineModel<string>('password')
+	const remember = defineModel<boolean>('remember', {default: true})
 const awaiting = ref(false)
 
 function onSubmit() {
-  console.log('funcao submit chamada')
+	let auth = new Auth(remember.value)
+  awaiting.value = true
+  auth.signIn(email.value || '', password.value || '', () => {
+		awaiting.value = false
+		console.log('fez login')	
+		// window.location.reload()
+		router.push('/')
+    }, 
+		() => {
+			awaiting.value = false			
+			console.log('nao foi dessa vez')																			
+		}
+	)
 }
 
 </script>
-
 
 <template>
 <header>
@@ -30,6 +46,10 @@ function onSubmit() {
 				<div class="form-outline mb-2">                    
 					<label>Password</label>
 					<input type="password" class="form-control" v-model="password">
+				</div>
+				<div class="form-group form-check">
+					<input type="checkbox" class="form-check-input" v-model="remember">
+					<label class="form-check-label">Remember me</label>
 				</div>            
 				<input v-show="!awaiting" type="submit" class="btn-login" value="Login"></input> 				           
 			</form>
