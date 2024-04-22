@@ -22,8 +22,8 @@ class Auth {
 		})
 	}
 
-	failure(response: Response, onFailure: () => void) {
-		onFailure()				
+	failure(response: Response, onFailure: (response: Response) => void) {	
+		onFailure(response)		
 	}
 
 	currentUser() {
@@ -76,9 +76,9 @@ class Auth {
 				this.success(response, onSuccess)
 			}
 			else {
-				this.failure(response, onFailure)
+				this.failure(response, onFailure)				
 			}
-		})
+		})				
 	}
 }
 

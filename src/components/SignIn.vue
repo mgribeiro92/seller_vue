@@ -8,7 +8,7 @@ const auth = new Auth()
 
 const email = defineModel<string>('email')
 const password =  defineModel<string>('password')
-	const remember = defineModel<boolean>('remember', {default: true})
+const remember = defineModel<boolean>('remember', {default: true})
 const awaiting = ref(false)
 
 function onSubmit() {
@@ -18,8 +18,12 @@ function onSubmit() {
 		awaiting.value = false
 		router.push('/')
     }, 
-		() => {
-			awaiting.value = false																	
+		(response) => {
+			awaiting.value = false
+			console.log(response)
+			response.json().then((json) => {				
+				console.log(json)
+			})																														
 		}
 	)
 }

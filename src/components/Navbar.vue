@@ -43,9 +43,8 @@ const logOut = function() {
 <style scoped>
 
   nav {      
-    background:	#d0f0c0;
-    width: 100%;
-    
+    background:	#fa9901;
+    width: 100%;    
   }
   
 </style>
