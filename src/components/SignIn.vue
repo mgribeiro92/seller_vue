@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import router from '@/router';
+import Message from '../components/Message.vue'
 import { ref } from 'vue';
 import { Auth } from '@/auth'
 
@@ -11,6 +12,9 @@ const password =  defineModel<string>('password')
 const remember = defineModel<boolean>('remember', {default: true})
 const awaiting = ref(false)
 
+const msg =  ref('')
+const alert = ref('')
+
 function onSubmit() {
 	let auth = new Auth(remember.value)
   awaiting.value = true
@@ -18,12 +22,10 @@ function onSubmit() {
 		awaiting.value = false
 		router.push('/')
     }, 
-		(response) => {
-			awaiting.value = false
-			console.log(response)
-			response.json().then((json) => {				
-				console.log(json)
-			})																														
+		(json: any) => {
+			awaiting.value = false				
+			msg.value = json.message
+			alert.value = 'error'																																	
 		}
 	)
 }
@@ -33,7 +35,9 @@ function onSubmit() {
 <template>
 <header>
 	<div>
-		<!-- <Message v-show="msg" :message="msg" :alert="alert"/> -->		
+		<div style="width: 400px">
+			<Message v-show="msg" :message="msg" :alert="alert"/>
+		</div>
 		<div class="login">			
 			<h2>Welcome to delivery for Seller!</h2>
 			<p>This application is for sellers only!</p>  		   						

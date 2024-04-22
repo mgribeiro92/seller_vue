@@ -24,7 +24,7 @@ const logOut = function() {
           <RouterLink class="nav-link" to="/">Home</RouterLink>
         </li>
         <li class="nav-item">          
-          <RouterLink class="nav-link" to="">Stores</RouterLink>
+          <RouterLink class="nav-link" to="/stores">Stores</RouterLink>
         </li>                       
       </ul>        
       <ul class="d-flex navbar-nav">
@@ -43,8 +43,17 @@ const logOut = function() {
 <style scoped>
 
   nav {      
-    background:	#fa9901;
-    width: 100%;    
+    background:	white;
+    width: 100%;
+    border-bottom: 2px solid #fa9901;
+  }
+
+  .nav-link {
+    color: #fa9901;
+  }
+
+  .navbar-brand {
+    color: #fa9901;
   }
   
 </style>

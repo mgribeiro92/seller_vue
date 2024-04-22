@@ -22,8 +22,10 @@ class Auth {
 		})
 	}
 
-	failure(response: Response, onFailure: (response: Response) => void) {	
-		onFailure(response)		
+	failure(response: Response, onFailure: (json: any) => void) {
+		response.json().then((json => {
+			onFailure(json)
+		}))				
 	}
 
 	currentUser() {
@@ -32,7 +34,8 @@ class Auth {
 		}
 
 		return {
-			email: this.getFallback('email')
+			email: this.getFallback('email'),
+			token: this.getFallback('token')
 		}
 	}
 
@@ -53,7 +56,7 @@ class Auth {
 	}
 
 
-	async signIn(email: string, password: string, onSuccess: () => void, onFailure: () => void) {
+	async signIn(email: string, password: string, onSuccess: () => void, onFailure: { (json: JSON): void }) {
 		console.log("will sign in...")
 		const body = {
 			login: {

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import SignInView from '../views/SignInView.vue'
+import StoresView from '../views/StoresView.vue'
 import { Auth } from '@/auth'
 
 const auth = new Auth()
@@ -27,6 +28,18 @@ const router = createRouter({
       name: 'sign_in',
       component: SignInView,
       meta: { showNavBar: false }
+    },
+    {
+      path: '/stores',
+      name: 'stores',
+      component: StoresView,
+      beforeEnter (_, __, next) { 
+        if (isLoggedIn) {       
+          next();
+          return;
+        }
+        next('/sign_in')
+      }
     },    
   ]
 })
