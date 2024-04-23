@@ -43,17 +43,16 @@ const logOut = function() {
 <style scoped>
 
   nav {      
-    background:	white;
+    background:	#a32020;
     width: 100%;
-    border-bottom: 2px solid #fa9901;
   }
 
   .nav-link {
-    color: #fa9901;
+    color: white;
   }
 
   .navbar-brand {
-    color: #fa9901;
+    color: white;
   }
   
 </style>

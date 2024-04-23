@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 const props = defineProps(['message', 'alert'])
-
+console.log(props.message)
 </script>
 
 <template>
@@ -12,9 +12,7 @@ const props = defineProps(['message', 'alert'])
 
 <style scoped>
 
-  .alert {
-		padding: 15px;
-		margin: 10px;
+  .alert {	
 		border: 1px solid transparent;
 		border-radius: 4px;
 	}

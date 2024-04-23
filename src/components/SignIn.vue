@@ -1,12 +1,13 @@
 <script setup lang="ts">
 
-import router from '@/router';
+import { useRouter } from 'vue-router'
 import Message from '../components/Message.vue'
 import { ref } from 'vue';
 import { Auth } from '@/auth'
+import event from '@/event'
 
 const auth = new Auth()
-
+const router = useRouter()
 const email = defineModel<string>('email')
 const password =  defineModel<string>('password')
 const remember = defineModel<boolean>('remember', {default: true})
@@ -19,7 +20,14 @@ function onSubmit() {
 	let auth = new Auth(remember.value)
   awaiting.value = true
   auth.signIn(email.value || '', password.value || '', () => {
-		awaiting.value = false
+		awaiting.value = false		
+		console.log('sucesso login')
+		setTimeout(() => {
+			event.emit("sign_in", { 
+				msg: 'Successful authentication!',					
+				alert: 'success' 
+			})  
+		}, 1000);
 		router.push('/')
     }, 
 		(json: any) => {
@@ -29,6 +37,8 @@ function onSubmit() {
 		}
 	)
 }
+
+console.log(msg.value)
 
 </script>
 
@@ -71,7 +81,7 @@ function onSubmit() {
 		align-items: center;
 		justify-content: right;
 		height: 100vh;
-		background-image: url('../assets/background-seller.png');  
+		/* background-image: url('../assets/background-seller.png');   */
     background-size: cover
 	}
 
