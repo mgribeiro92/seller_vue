@@ -22,13 +22,14 @@ function onSubmit() {
   auth.signIn(email.value || '', password.value || '', () => {
 		awaiting.value = false		
 		console.log('sucesso login')
+		router.push('/')
 		setTimeout(() => {
 			event.emit("sign_in", { 
 				msg: 'Successful authentication!',					
 				alert: 'success' 
 			})  
-		}, 1000);
-		router.push('/')
+		}, 2000);		
+
     }, 
 		(json: any) => {
 			awaiting.value = false				

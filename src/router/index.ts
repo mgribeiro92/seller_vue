@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import SignInView from '../views/SignInView.vue'
 import StoresView from '../views/StoresView.vue'
+import ProductsView from '../views/ProductsView.vue'
 import { Auth } from '@/auth'
 
 const auth = new Auth()
@@ -40,6 +41,18 @@ const router = createRouter({
         }
         next('/sign_in')
       }
+    },
+    {
+      path: '/stores/:storeId/products',
+      name: 'products',      
+      component: ProductsView,
+      beforeEnter (_, __, next) { 
+        if (isLoggedIn) {       
+          next();
+          return;
+        }
+        next('/sign_in')
+      }         
     },    
   ]
 })

@@ -1,4 +1,5 @@
 import { createStorage, type SimpleStorage } from './storage'
+import { jwtDecode } from "jwt-decode"
 
 class Auth {
 	private storage: SimpleStorage
@@ -53,6 +54,16 @@ class Auth {
 		persistent.remove('email')
 
 		andThen()
+	}
+
+	isTokenValid() {
+		const jwt_decode = jwtDecode(this.getFallback('token'))
+		const timestampAtual = Math.floor(Date.now() / 1000)
+		if (jwt_decode.exp > timestampAtual) {
+			return true
+		} else {
+			return false
+		}
 	}
 
 

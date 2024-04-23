@@ -1,14 +1,14 @@
 <script setup lang="ts">
 
 import { Auth } from '@/auth'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import event from '@/event';
 import Message from './Message.vue';
 
 
 const auth = new Auth()
 
-const stores = ref([])
+const stores = ref()
 const isLoading = ref(true)
 const currentUser = auth.currentUser()
 
@@ -27,6 +27,7 @@ onMounted(async () => {
       },           
     })
     const data = await response.json();
+    console.log(data)
     stores.value = data;
     isLoading.value = false;
   } catch (error) {
@@ -48,14 +49,14 @@ onMounted(async () => {
   <div class="message">
     <Message v-if="msg" :message="msg" :alert="alert"/>
   </div>  
-  <div class="stores-title">
+  <div class="container">
     <h2>Stores</h2>
     <hr>
     <div class="stores">
       <div class="card" style="width: 18rem;" v-for = "store in stores" :key = "store.id">
         <div class="card-body">
           <h5 class="card-title">{{ store.name }}</h5>
-          <a href="#" class="card-link">Show products</a>
+          <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show products</RouterLink>          
         </div>
       </div>
       <div class="card" style="width: 18rem;">
