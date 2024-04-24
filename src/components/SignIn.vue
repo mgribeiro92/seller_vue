@@ -2,7 +2,7 @@
 
 import { useRouter } from 'vue-router'
 import Message from '../components/Message.vue'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Auth } from '@/auth'
 import event from '@/event'
 
@@ -16,20 +16,29 @@ const awaiting = ref(false)
 const msg =  ref('')
 const alert = ref('')
 
+onMounted(() => {
+	event.on("token_invalid", (dados: any) => {
+		console.log(dados)
+		msg.value = dados.msg
+		alert.value = dados.alert
+		console.log('log dos dados recebidos')    
+	})
+}) 
+
 function onSubmit() {
 	let auth = new Auth(remember.value)
   awaiting.value = true
   auth.signIn(email.value || '', password.value || '', () => {
 		awaiting.value = false		
-		console.log('sucesso login')
-		router.push('/')
+		console.log('sucesso login')		
 		setTimeout(() => {
 			event.emit("sign_in", { 
 				msg: 'Successful authentication!',					
 				alert: 'success' 
-			})  
-		}, 2000);		
-
+			})
+			console.log('timeout lancado') 
+		}, 1000);	
+		router.push({name: 'home'})
     }, 
 		(json: any) => {
 			awaiting.value = false				
@@ -38,8 +47,6 @@ function onSubmit() {
 		}
 	)
 }
-
-console.log(msg.value)
 
 </script>
 

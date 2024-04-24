@@ -4,14 +4,10 @@ import { Auth } from '@/auth'
 import { ref, onMounted } from 'vue'
 import Message from '../components/Message.vue'
 import event from '@/event'
-import { jwtDecode } from "jwt-decode";
 
 const auth = new Auth()
 const currentUser = ref(auth.currentUser())
 const isLoggedIn = auth.isLoggedIn()
-
-const tokenValid = auth.isTokenValid()
-console.log(tokenValid)
 
 const msg = ref('')
 const alert = ref('')
@@ -25,14 +21,14 @@ onMounted(() => {
 	})
 })
 
-
-
-
 </script>
 
 
 <template>
-  <Message v-if="msg" :message="msg" :alert="alert"/>
+  <div style="margin: 10px">
+    <Message v-if="msg" :message="msg" :alert="alert"/>
+  </div>
+  
   <h2>Welcome seller!</h2>
   <h3>{{ currentUser?.email }}</h3>
 </template>

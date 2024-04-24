@@ -1,46 +1,51 @@
 <script setup lang="ts">
 
+import { useRouter } from 'vue-router'
 import { Auth } from '@/auth'
 import { ref, onMounted, reactive } from 'vue'
 import event from '@/event';
 import Message from './Message.vue';
 
+const router = useRouter()
 
 const auth = new Auth()
+const currentUser = auth.currentUser()
+const isLoggedIn = auth.isLoggedIn()
 
 const stores = ref()
-const isLoading = ref(true)
-const currentUser = auth.currentUser()
-
 const msg = ref('')
 const alert = ref('')
 
-onMounted(async () => {
+async function getStore() {
   try {
     const response = await fetch (
       'http://127.0.0.1:3000/api/user_store', {
       method: 'GET',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer" + ' ' + currentUser?.token
-      },           
-    })
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer" + ' ' + currentUser?.token
+        },           
+      })
     const data = await response.json();
-    console.log(data)
-    stores.value = data;
-    isLoading.value = false;
-  } catch (error) {
-    console.error('Erro ao carregar os dados:', error);
-    isLoading.value = false;
+    if(data.message == "Nope!") {
+      console.log(data)
+      auth.newToken()
+           
+    } else {
+      console.log(data)
+      stores.value = data
+    }      
+  } catch (error) {    
+    console.error('Erro ao carregar os dados:', error)
   }
-  event.on("sign_in", (dados: any) => {
-		console.log(dados)
-		msg.value = dados.msg
-		alert.value = dados.alert
-		console.log('log dos dados recebidos')
-	})
-});
+}
+
+
+
+onMounted(() => {
+  getStore()
+})
 
 </script>
 
@@ -53,7 +58,7 @@ onMounted(async () => {
     <h2>Stores</h2>
     <hr>
     <div class="stores">
-      <div class="card" style="width: 18rem;" v-for = "store in stores" :key = "store.id">
+      <div class="card" style="width: 18rem;"  v-for = "store in stores" :key = "store.id">
         <div class="card-body">
           <h5 class="card-title">{{ store.name }}</h5>
           <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show products</RouterLink>          

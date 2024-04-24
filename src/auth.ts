@@ -1,5 +1,6 @@
 import { createStorage, type SimpleStorage } from './storage'
-import { jwtDecode } from "jwt-decode"
+import router from '@/router';
+import event from '@/event'
 
 class Auth {
 	private storage: SimpleStorage
@@ -18,7 +19,9 @@ class Auth {
 	success(response: Response, onSuccess: () => void) {
 		response.json().then((json) => {
 			this.storage.store('token', json.token)
-			this.storage.store('email', json.email)		
+			this.storage.store('email', json.email)
+			this.storage.store('refresh_token', json.refresh_token)
+			console.log(this.storage)	
 			onSuccess()
 		})
 	}
@@ -36,7 +39,8 @@ class Auth {
 
 		return {
 			email: this.getFallback('email'),
-			token: this.getFallback('token')
+			token: this.getFallback('token'),
+			refresh_token: this.getFallback('refresh_token')
 		}
 	}
 
@@ -50,22 +54,13 @@ class Auth {
 
 		transient.remove('token')
 		transient.remove('email')
+		transient.remove('refresh_token')
 		persistent.remove('token')
 		persistent.remove('email')
+		persistent.remove('refresh_token')
 
 		andThen()
 	}
-
-	isTokenValid() {
-		const jwt_decode = jwtDecode(this.getFallback('token'))
-		const timestampAtual = Math.floor(Date.now() / 1000)
-		if (jwt_decode.exp > timestampAtual) {
-			return true
-		} else {
-			return false
-		}
-	}
-
 
 	async signIn(email: string, password: string, onSuccess: () => void, onFailure: { (json: JSON): void }) {
 		console.log("will sign in...")
@@ -73,7 +68,6 @@ class Auth {
 			login: {
 				email: email,
 				password: password,
-				app_vue: "seller"
 			}
 		}
 		const response = await fetch (
@@ -93,6 +87,37 @@ class Auth {
 				this.failure(response, onFailure)				
 			}
 		})				
+	}
+
+	async newToken() {
+		const body = {
+			refresh_token: this.getFallback('refresh_token')
+		}
+		console.log(body)
+		const response = await fetch (
+			import.meta.env.VITE_BASE_URL + '/new_token', {
+				method: 'POST',
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(body)
+			})
+		const data_refresh = await response.json()
+		if(data_refresh.token) {
+			console.log('ta passando aqui', data_refresh)
+			console.log(sessionStorage.getItem('token'))
+			this.storage.store('token', data_refresh.token)			
+		} else {
+			setTimeout(() => {
+				event.emit("token_invalid", { 
+					msg: 'Session closed, please log in again!',					
+					alert: 'warning' 
+				})
+			}, 1000)
+			this.signOut()
+			router.push('/sign_in')
+		}
 	}
 }
 

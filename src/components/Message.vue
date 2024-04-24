@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 const props = defineProps(['message', 'alert'])
-console.log(props.message)
 </script>
 
 <template>

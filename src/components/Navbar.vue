@@ -10,7 +10,7 @@ const currentUser = ref(auth.currentUser())
 const logOut = function() {
   console.log('logout chamado')
   auth.signOut()
-  window.location.reload()
+  router.push('/sign_in')
 }
 </script>
 
