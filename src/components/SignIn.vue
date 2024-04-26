@@ -21,6 +21,10 @@ onMounted(() => {
 		msg.value = dados.msg
 		alert.value = dados.alert  
 	})
+	event.on("logged_in", (dados: any) => {
+		msg.value = dados.msg
+		alert.value = dados.alert  
+	})
 }) 
 
 function onSubmit() {
@@ -35,7 +39,7 @@ function onSubmit() {
 				alert: 'success' 
 			})
 			console.log('timeout lancado') 
-		}, 1000);	
+		}, 1000)
 		router.push({name: 'home'})
     }, 
 		(json: any) => {

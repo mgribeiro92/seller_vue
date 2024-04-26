@@ -91,10 +91,10 @@ class Auth {
 	}
 
 	async newToken() {
+		console.log('new token vai ser criado')
 		const body = {
 			refresh_token: this.getFallback('refresh_token')
 		}
-		console.log(body)
 		const response = await fetch (
 			import.meta.env.VITE_BASE_URL + '/new_token', {
 				method: 'POST',
@@ -104,22 +104,17 @@ class Auth {
 				},
 				body: JSON.stringify(body)
 			})
-		const data_refresh = await response.json()
-		if(data_refresh.token) {
-			console.log(data_refresh.token)
-			if (localStorage.getItem('token')) {
-				localStorage.setItem('token', data_refresh.token)
-			} else {
-				sessionStorage.setItem('token', data_refresh.token)
-			}		
-		} else {
+		return await response.json()		
+	}
+
+	verifyTokenRedirect() {
+		if (!this.isLoggedIn()) {
 			setTimeout(() => {
-				event.emit("token_invalid", { 
-					msg: 'Session closed, please log in again!',					
-					alert: 'warning' 
+				event.emit("logged_in", {
+				msg: "Please log in to access delivery!",
+				alert: "warning" 
 				})
-			}, 1000)
-			this.signOut()
+			}, 500)
 			router.push('/sign_in')
 		}
 	}

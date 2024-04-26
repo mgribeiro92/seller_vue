@@ -2,22 +2,32 @@
 
 import { useRouter } from 'vue-router'
 import { Auth } from '@/auth'
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import event from '@/event';
 import Message from './Message.vue';
 
 const router = useRouter()
+const auth =  new Auth()
 
-const auth = new Auth()
-const currentUser = auth.currentUser()
-const isLoggedIn = auth.isLoggedIn()
-
-console.log(auth)
 const stores = ref()
 const msg = ref('')
 const alert = ref('')
 
+onMounted(() => {
+  auth.verifyTokenRedirect()  
+})
+
+function replaceToken (token: string) {
+  if (localStorage.getItem('token')) {
+    localStorage.setItem('token', token)
+  } else {
+    sessionStorage.setItem('token',token)
+  }		
+}
+
 async function getStore() {
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
   try {
     const response = await fetch (
       'http://127.0.0.1:3000/stores', {
@@ -28,20 +38,31 @@ async function getStore() {
           "Authorization": "Bearer" + ' ' + currentUser?.token
         },           
       })
-    const data = await response.json();
-    if(data.message == "Nope!") {
-      console.log(data)
-      auth.newToken()
-           
+    const data = await response.json()
+    console.log(data)
+    if(data.message == "Invalid token!") {
+      const newTokenResponse = await auth.newToken()
+      console.log(newTokenResponse)
+      if (newTokenResponse.token) {
+        replaceToken(newTokenResponse.token)
+        getStore()
+      } else {
+        setTimeout(() => {
+				event.emit("token_invalid", { 
+					msg: 'Session closed, please log in again!',					
+					alert: 'warning' 
+          })
+        }, 1000)
+        auth.signOut()
+        router.push('/sign_in')
+		  }
     } else {
-      console.log(data)
       stores.value = data
     }      
   } catch (error) {    
     console.error('Erro ao carregar os dados:', error)
   }
 }
-
 
 
 onMounted(() => {
@@ -69,8 +90,8 @@ onMounted(() => {
         <div class="card-body">
           <h5 class="card-title"></h5>
           <img src="../assets/mais.png" alt="">
-          <p></p>      
-          <a href="#" class="card-link">Create a new store!</a>
+          <p></p>
+          <RouterLink :to="{ name: 'new_store'}">Create a new store</RouterLink>      
         </div>
       </div>
     </div>

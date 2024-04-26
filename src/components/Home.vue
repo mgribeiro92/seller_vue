@@ -1,19 +1,23 @@
 <script setup lang="ts">
 
+import { useRouter } from 'vue-router'
 import { Auth } from '@/auth'
 import { ref, onMounted } from 'vue'
 import Message from '../components/Message.vue'
 import event from '@/event'
 
+const router = useRouter()
 const auth = new Auth()
-const currentUser = ref(auth.currentUser())
-const isLoggedIn = auth.isLoggedIn()
 
-console.log(auth)
+const currentUser = ref(auth.currentUser())
+
+
 const msg = ref('')
 const alert = ref('')
 
 onMounted(() => {
+  auth.verifyTokenRedirect()
+
 	event.on("sign_in", (dados: any) => {
 		msg.value = dados.msg
 		alert.value = dados.alert   

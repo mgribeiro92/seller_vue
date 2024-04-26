@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import SignInView from '../views/SignInView.vue'
 import StoresView from '../views/StoresView.vue'
 import ProductsView from '../views/ProductsView.vue'
+import NewStoreView from '../views/NewStoreView.vue'
 import { ref } from 'vue'
 import { Auth } from '@/auth'
 
@@ -31,14 +32,12 @@ const router = createRouter({
     {
       path: '/stores/:storeId/products',
       name: 'products',      
-      component: ProductsView,
-      beforeEnter (_, __, next) { 
-        if (isLoggedIn) {       
-          next();
-          return;
-        }
-        next('/sign_in')
-      }         
+      component: ProductsView,        
+    },
+    {
+      path: '/new_store',
+      name: 'new_store',      
+      component: NewStoreView,        
     },    
   ]
 })
