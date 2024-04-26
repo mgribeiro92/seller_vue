@@ -5,8 +5,8 @@ import Message from '../components/Message.vue'
 import { onMounted, ref } from 'vue';
 import { Auth } from '@/auth'
 import event from '@/event'
+import { initializeAuth, getAuthInstance } from '@/authManager';
 
-const auth = new Auth()
 const router = useRouter()
 const email = defineModel<string>('email')
 const password =  defineModel<string>('password')
@@ -18,15 +18,15 @@ const alert = ref('')
 
 onMounted(() => {
 	event.on("token_invalid", (dados: any) => {
-		console.log(dados)
 		msg.value = dados.msg
-		alert.value = dados.alert
-		console.log('log dos dados recebidos')    
+		alert.value = dados.alert  
 	})
 }) 
 
 function onSubmit() {
-	let auth = new Auth(remember.value)
+	initializeAuth(remember.value)
+	console.log(remember.value)
+	const auth = getAuthInstance()
   awaiting.value = true
   auth.signIn(email.value || '', password.value || '', () => {
 		awaiting.value = false		
@@ -89,7 +89,7 @@ function onSubmit() {
 		align-items: center;
 		justify-content: right;
 		height: 100vh;
-		/* background-image: url('../assets/background-seller.png');   */
+		background-image: url('../assets/background-seller.png');
     background-size: cover
 	}
 

@@ -4,20 +4,20 @@ import { Auth } from '@/auth'
 import { ref, onMounted } from 'vue'
 import Message from '../components/Message.vue'
 import event from '@/event'
+import { getAuthInstance } from '@/authManager';
 
-const auth = new Auth()
+const auth = getAuthInstance()
 const currentUser = ref(auth.currentUser())
 const isLoggedIn = auth.isLoggedIn()
 
+console.log(auth)
 const msg = ref('')
 const alert = ref('')
 
 onMounted(() => {
 	event.on("sign_in", (dados: any) => {
-		console.log(dados)
 		msg.value = dados.msg
-		alert.value = dados.alert
-		console.log('log dos dados recebidos')    
+		alert.value = dados.alert   
 	})
 })
 

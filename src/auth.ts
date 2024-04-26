@@ -105,9 +105,12 @@ class Auth {
 			})
 		const data_refresh = await response.json()
 		if(data_refresh.token) {
-			console.log('ta passando aqui', data_refresh)
-			console.log(sessionStorage.getItem('token'))
-			this.storage.store('token', data_refresh.token)			
+			console.log(data_refresh.token)
+			if (localStorage.getItem('token')) {
+				localStorage.setItem('token', data_refresh.token)
+			} else {
+				sessionStorage.setItem('token', data_refresh.token)
+			}		
 		} else {
 			setTimeout(() => {
 				event.emit("token_invalid", { 

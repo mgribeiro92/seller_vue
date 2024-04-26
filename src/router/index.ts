@@ -6,8 +6,8 @@ import ProductsView from '../views/ProductsView.vue'
 import { ref } from 'vue'
 import { Auth } from '@/auth'
 
-const auth = new Auth()
-const isLoggedIn = auth.isLoggedIn()
+// const auth = new Auth()
+// const isLoggedIn = auth.isLoggedIn()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
