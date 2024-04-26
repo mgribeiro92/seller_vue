@@ -12,6 +12,7 @@ const auth = new Auth()
 const currentUser = auth.currentUser()
 const isLoggedIn = auth.isLoggedIn()
 
+console.log(auth)
 const stores = ref()
 const msg = ref('')
 const alert = ref('')
@@ -19,7 +20,7 @@ const alert = ref('')
 async function getStore() {
   try {
     const response = await fetch (
-      'http://127.0.0.1:3000/api/user_store', {
+      'http://127.0.0.1:3000/stores', {
       method: 'GET',
         headers: {
           "Accept": "application/json",

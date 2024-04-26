@@ -21,13 +21,13 @@ class Auth {
 			this.storage.store('token', json.token)
 			this.storage.store('email', json.email)
 			this.storage.store('refresh_token', json.refresh_token)
-			console.log(this.storage)	
 			onSuccess()
 		})
 	}
 
 	failure(response: Response, onFailure: (json: any) => void) {
 		response.json().then((json => {
+			console.log(json)
 			onFailure(json)
 		}))				
 	}
@@ -75,7 +75,8 @@ class Auth {
 			method: "POST",
 			headers: {
 				"Accept": "application/json",
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
+				"X-API-KEY": "fvXfHcO7vr8qIHuCb5wFsLcd8uE="
 			},
 			body: JSON.stringify(body)
 		})	

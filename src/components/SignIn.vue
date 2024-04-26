@@ -5,8 +5,8 @@ import Message from '../components/Message.vue'
 import { onMounted, ref } from 'vue';
 import { Auth } from '@/auth'
 import event from '@/event'
-import { initializeAuth, getAuthInstance } from '@/authManager';
 
+const auth = new Auth()
 const router = useRouter()
 const email = defineModel<string>('email')
 const password =  defineModel<string>('password')
@@ -24,9 +24,7 @@ onMounted(() => {
 }) 
 
 function onSubmit() {
-	initializeAuth(remember.value)
-	console.log(remember.value)
-	const auth = getAuthInstance()
+	const auth = new Auth(remember.value)
   awaiting.value = true
   auth.signIn(email.value || '', password.value || '', () => {
 		awaiting.value = false		

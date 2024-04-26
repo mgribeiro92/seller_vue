@@ -4,9 +4,8 @@ import { Auth } from '@/auth'
 import { ref, onMounted } from 'vue'
 import Message from '../components/Message.vue'
 import event from '@/event'
-import { getAuthInstance } from '@/authManager';
 
-const auth = getAuthInstance()
+const auth = new Auth()
 const currentUser = ref(auth.currentUser())
 const isLoggedIn = auth.isLoggedIn()
 
