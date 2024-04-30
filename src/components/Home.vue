@@ -28,18 +28,27 @@ onMounted(() => {
 
 
 <template>
-  <div style="margin: 10px">
+  <div class="container">
     <Message v-if="msg" :message="msg" :alert="alert"/>
   </div>
   
-  <h2>Welcome seller!</h2>
-  <h3>{{ currentUser?.email }}</h3>
+  <div class="container">
+    <h3>Welcome seller!</h3>
+    <hr>
+    <p>This is your email account: {{ currentUser?.email }}!</p>
+
+  </div>
+ 
 </template>
 
 <style>
 
   .teste {
     display: flex;
+  }
+
+  .container {
+    margin-top: 10px;
   }
 
 </style>

@@ -3,70 +3,29 @@
 import { useRouter } from 'vue-router'
 import { Auth } from '@/auth'
 import { ref, onMounted } from 'vue'
+import { stores } from '@/stores'
+
 import event from '@/event';
 import Message from './Message.vue';
+import NewStore from './NewStore.vue';
 
-const router = useRouter()
+// const router = useRouter()
 const auth =  new Auth()
 
-const stores = ref()
+const stores_data = ref()
 const msg = ref('')
 const alert = ref('')
+const show_store = ref(false)
+const show_modal = ref(false)
 
-onMounted(() => {
-  auth.verifyTokenRedirect()  
-})
-
-function replaceToken (token: string) {
-  if (localStorage.getItem('token')) {
-    localStorage.setItem('token', token)
-  } else {
-    sessionStorage.setItem('token',token)
-  }		
-}
-
-async function getStore() {
-  const auth = new Auth()
-  const currentUser = auth.currentUser()
-  try {
-    const response = await fetch (
-      'http://127.0.0.1:3000/stores', {
-      method: 'GET',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "Bearer" + ' ' + currentUser?.token
-        },           
-      })
-    const data = await response.json()
-    console.log(data)
-    if(data.message == "Invalid token!") {
-      const newTokenResponse = await auth.newToken()
-      console.log(newTokenResponse)
-      if (newTokenResponse.token) {
-        replaceToken(newTokenResponse.token)
-        getStore()
-      } else {
-        setTimeout(() => {
-				event.emit("token_invalid", { 
-					msg: 'Session closed, please log in again!',					
-					alert: 'warning' 
-          })
-        }, 1000)
-        auth.signOut()
-        router.push('/sign_in')
-		  }
-    } else {
-      stores.value = data
-    }      
-  } catch (error) {    
-    console.error('Erro ao carregar os dados:', error)
-  }
-}
-
-
-onMounted(() => {
-  getStore()
+onMounted(async () => {
+  auth.verifyTokenRedirect()
+  stores_data.value = await stores.getStore()
+  event.on("stores", (dados: any) => {
+    msg.value = dados.msg
+    alert.value = dados.alert
+    show_store.value = false 
+  })
 })
 
 </script>
@@ -77,27 +36,51 @@ onMounted(() => {
     <Message v-if="msg" :message="msg" :alert="alert"/>
   </div>  
   <div class="container">
-    <h2>Stores</h2>
+    <h3>Stores</h3>
     <hr>
     <div class="stores">
-      <div class="card" style="width: 18rem;"  v-for = "store in stores" :key = "store.id">
+      <div class="card"  v-for = "store in stores_data" :key = "store.id">
         <div class="card-body">
           <h5 class="card-title">{{ store.name }}</h5>
           <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show products</RouterLink>          
         </div>
       </div>
-      <div class="card" style="width: 18rem;">
+      <div class="card">
         <div class="card-body">
           <h5 class="card-title"></h5>
           <img src="../assets/mais.png" alt="">
           <p></p>
-          <RouterLink :to="{ name: 'new_store'}">Create a new store</RouterLink>      
+          <button @click="show_store = true" class="btn-store">Create a new store</button>      
         </div>
-      </div>
+      </div>      
+    </div>
+  </div>
+
+  <button @click="show_modal = true">Abrir Modal</button>
+  
+  <div v-if="show_store" class="container">  
+    <hr>
+    <h3>Create a new store!</h3>
+    <form class="card" @submit.prevent="newStore">
+      <div class="form-outline mb-2">                  
+        <label>Name</label>
+        <input type="text" class="form-control" v-model="name_store">
+      </div>          
+      <input type="submit" class="btn-login" value="Create store"></input>
+    </form>
+  </div>
+
+
+  <div v-if="show_modal" class="modal">
+    <div class="modal-content">
+      <span @click="show_modal = false" class="close">&times;</span>
+      <p>Conteúdo do modal aqui...</p>
     </div>
   </div>
 
 </template>
+
+
 
 <style scoped>
 
@@ -108,10 +91,12 @@ onMounted(() => {
 
   .stores {
     display: flex;
+    flex-wrap: wrap;
   }
 
   .card{
-    margin-right: 15px;
+    margin: 10px;
+    width: 16rem;
   }
 
   img {
@@ -124,5 +109,64 @@ onMounted(() => {
     margin: 10px 50px;
   }
 
+  .btn-store {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .modal {
+    display: block;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn-login {    
+		padding: 0px 10px;
+		margin: 10px 0px;  
+		color: #421010;
+		background-color: white;
+		border-radius: 4px;
+		cursor: pointer;
+		height: 35px;
+    width: 150px;
+		border: 1px solid #421010;
+	}
+
+	.btn-login:hover {
+		color: white; 
+		background-color: #421010;
+	}
 
 </style>
