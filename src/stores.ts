@@ -1,7 +1,11 @@
 import { Auth } from './auth'
 import event from './event';
 import { useRouter } from 'vue-router'
+import router from '@/router';
 import { ref } from 'vue'
+
+const auth = new Auth()
+const currentUser = auth.currentUser()
 
 function replaceToken (token: string) {
   if (localStorage.getItem('token')) {
@@ -12,9 +16,6 @@ function replaceToken (token: string) {
 }
 
 async function getStore() {
-  const router = useRouter()
-  const auth = new Auth()
-  const currentUser = auth.currentUser()
   try {
     const response = await fetch (
       'http://127.0.0.1:3000/stores', {
@@ -31,7 +32,7 @@ async function getStore() {
       console.log(newTokenResponse)      
       if (newTokenResponse.token) {
         replaceToken(newTokenResponse.token)
-        getStore()
+        window.location.reload()
       } else {
         setTimeout(() => {
 				event.emit("token_invalid", { 
@@ -43,27 +44,43 @@ async function getStore() {
         router.push('/sign_in')
 		  }
     } else {
-      return data
-      console.log(data)
+      return data      
     }      
   } catch (error) {    
     console.error('Erro ao carregar os dados:', error)
   }
 }
 
-function newStore() {
-  const router = useRouter()
-  setTimeout(() => {
-    event.emit("stores", { 
-      msg: 'Store created successfully!',					
-      alert: 'success' 
+async function newStore(name_store: string) {
+  const body = {
+    store: {
+      name: name_store,
+    }
+  } 
+  const response = await fetch (
+    'http://127.0.0.1:3000/stores', {
+    method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer" + ' ' + currentUser?.token
+      },
+      body: JSON.stringify(body)          
     })
-    console.log('timeout lancado') 
-  }, 1000)
-  router.push({name: 'stores'}) 
+  const data_store = await response.json()
+  if(data_store) {
+    setTimeout(() => {
+      console.log('evento emitido')
+      event.emit("stores_url", {
+        msg: 'Store created successfully!',					
+        alert: 'success' 
+        })
+      }, 1000)
+    router.push('/stores')
+  }   
 }
 
 export const stores = {
   getStore,
-  newStore
+  newStore,
 }

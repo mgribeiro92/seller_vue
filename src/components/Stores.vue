@@ -7,11 +7,11 @@ import { stores } from '@/stores'
 
 import event from '@/event';
 import Message from './Message.vue';
-import NewStore from './NewStore.vue';
 
 // const router = useRouter()
 const auth =  new Auth()
 
+const name_store = defineModel<string>('name_store')
 const stores_data = ref()
 const msg = ref('')
 const alert = ref('')
@@ -21,12 +21,17 @@ const show_modal = ref(false)
 onMounted(async () => {
   auth.verifyTokenRedirect()
   stores_data.value = await stores.getStore()
-  event.on("stores", (dados: any) => {
+  event.on("stores_url", (dados: any) => {
     msg.value = dados.msg
     alert.value = dados.alert
-    show_store.value = false 
+    show_store.value = false
   })
 })
+
+async function createStore() {
+  stores.newStore(name_store.value || '')
+  show_modal.value = false
+}
 
 </script>
 
@@ -42,7 +47,7 @@ onMounted(async () => {
       <div class="card"  v-for = "store in stores_data" :key = "store.id">
         <div class="card-body">
           <h5 class="card-title">{{ store.name }}</h5>
-          <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show products</RouterLink>          
+          <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show store and products</RouterLink>          
         </div>
       </div>
       <div class="card">
@@ -54,28 +59,31 @@ onMounted(async () => {
         </div>
       </div>      
     </div>
-  </div>
-
-  <button @click="show_modal = true">Abrir Modal</button>
+  </div>  
   
   <div v-if="show_store" class="container">  
     <hr>
     <h3>Create a new store!</h3>
-    <form class="card" @submit.prevent="newStore">
+    <div class="card-store">
       <div class="form-outline mb-2">                  
         <label>Name</label>
         <input type="text" class="form-control" v-model="name_store">
-      </div>          
-      <input type="submit" class="btn-login" value="Create store"></input>
-    </form>
+      </div>
+      <button @click="show_modal = true" class="btn-login">Create Store</button>         
+    </div>
   </div>
-
 
   <div v-if="show_modal" class="modal">
     <div class="modal-content">
-      <span @click="show_modal = false" class="close">&times;</span>
-      <p>Conteúdo do modal aqui...</p>
+      <h5>Confirma o nome da loja?</h5>
+      <p style="margin-top:10px">O nome da sua loja é... <span style="font-weight: bold">{{ name_store }}</span></p> 
+      <div class="btn-confirmation-row">
+        <img class="btn-confirmation" @click="show_modal = false" src="../assets/botao-x.png" alt="">
+        <img class="btn-confirmation" @click="createStore()" src="../assets/verificar.png" alt="">
+      </div>   
+      
     </div>
+
   </div>
 
 </template>
@@ -97,6 +105,11 @@ onMounted(async () => {
   .card{
     margin: 10px;
     width: 16rem;
+  }
+
+  .card-store {
+    width: 400px;
+    margin-bottom: 20px;
   }
 
   img {
@@ -135,7 +148,7 @@ onMounted(async () => {
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 30%;
   }
 
   .close {
@@ -145,10 +158,14 @@ onMounted(async () => {
     font-weight: bold;
   }
 
-  .close:hover,
-  .close:focus {
-    color: black;
-    text-decoration: none;
+  .btn-confirmation-row {
+    display: flex;
+    justify-content: center;
+    gap: 30px
+  }
+
+  
+  .btn-confirmation:hover {
     cursor: pointer;
   }
 
