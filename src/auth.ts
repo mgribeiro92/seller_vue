@@ -107,7 +107,7 @@ class Auth {
 		return await response.json()		
 	}
 
-	verifyTokenRedirect() {
+	verifyToken() {
 		if (!this.isLoggedIn()) {
 			setTimeout(() => {
 				event.emit("logged_in", {
@@ -118,6 +118,46 @@ class Auth {
 			router.push('/sign_in')
 		}
 	}
+
+	replaceToken (token: string) {
+		if (localStorage.getItem('token')) {
+			localStorage.setItem('token', token)
+		} else {
+			sessionStorage.setItem('token',token)
+		}		
+	}
+
+	async validToken() {
+		const response = await fetch (
+		import.meta.env.VITE_BASE_URL + '/me', {
+		method: 'GET',
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json",
+				"Authorization": "Bearer" + ' ' + this.getFallback('token')
+			},           
+		})
+    const data = await response.json()
+		if(data.message == "Invalid token!") {
+      const newTokenResponse = await this.newToken()
+      console.log(newTokenResponse)      
+      if (newTokenResponse.token) {
+        this.replaceToken(newTokenResponse.token)
+        window.location.reload()
+      } else {
+        setTimeout(() => {
+				event.emit("token_invalid", { 
+					msg: 'Session closed, please log in again!',					
+					alert: 'warning' 
+          })
+        }, 1000)
+        this.signOut()
+        router.push('/sign_in')
+		  }
+    }
+	}
+
+
 }
 
 export {Auth}

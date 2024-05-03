@@ -6,7 +6,7 @@ const props = defineProps(['message', 'alert'])
 
 <template>
 
-  <div :id="alert" class="alert">{{ message }}</div>
+  <div :id="alert" class="alert container">{{ message }}</div>
 
 </template>
 

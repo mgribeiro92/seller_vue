@@ -19,8 +19,13 @@ const show_store = ref(false)
 const show_modal = ref(false)
 
 onMounted(async () => {
-  auth.verifyTokenRedirect()
-  stores_data.value = await stores.getStore()
+  auth.verifyToken()
+  try {
+    await auth.validToken()    
+  } finally {
+    stores_data.value = await stores.getStore()
+  }  
+  console.log(stores_data.value)
   event.on("stores_url", (dados: any) => {
     msg.value = dados.msg
     alert.value = dados.alert
@@ -44,19 +49,14 @@ async function createStore() {
     <h3>Stores</h3>
     <hr>
     <div class="stores">
-      <div class="card"  v-for = "store in stores_data" :key = "store.id">
-        <div class="card-body">
-          <h5 class="card-title">{{ store.name }}</h5>
-          <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show store and products</RouterLink>          
-        </div>
+      <div class="card-store"  v-for = "store in stores_data" :key = "store.id">
+        <h5 class="card-title">{{ store.name }}</h5>
+        <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show store and products</RouterLink>
       </div>
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title"></h5>
-          <img src="../assets/mais.png" alt="">
-          <p></p>
-          <button @click="show_store = true" class="btn-store">Create a new store</button>      
-        </div>
+      <div class="card-store">
+        <img src="../assets/mais.png" alt="">
+        <p></p>
+        <button @click="show_store = true" class="btn-store">Create a new store</button>      
       </div>      
     </div>
   </div>  
@@ -64,12 +64,13 @@ async function createStore() {
   <div v-if="show_store" class="container">  
     <hr>
     <h3>Create a new store!</h3>
-    <div class="card-store">
+    <div class="card">
       <div class="form-outline mb-2">                  
         <label>Name</label>
         <input type="text" class="form-control" v-model="name_store">
+        <span v-show="!name_store" class="error-message">Por favor, insira um nome.</span>
       </div>
-      <button @click="show_modal = true" class="btn-login">Create Store</button>         
+      <button v-show="name_store" @click="show_modal = true" class="btn-login">Create Store</button>         
     </div>
   </div>
 
@@ -80,10 +81,8 @@ async function createStore() {
       <div class="btn-confirmation-row">
         <img class="btn-confirmation" @click="show_modal = false" src="../assets/botao-x.png" alt="">
         <img class="btn-confirmation" @click="createStore()" src="../assets/verificar.png" alt="">
-      </div>   
-      
+      </div>      
     </div>
-
   </div>
 
 </template>
@@ -102,15 +101,17 @@ async function createStore() {
     flex-wrap: wrap;
   }
 
-  .card{
+  .card-store{
     margin: 10px;
     width: 16rem;
+    height: 8rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    text-align: left;
+    border-left: 2px solid #a32020;
   }
-
-  .card-store {
-    width: 400px;
-    margin-bottom: 20px;
-  }
+  
 
   img {
     width: 50px;
@@ -163,7 +164,6 @@ async function createStore() {
     justify-content: center;
     gap: 30px
   }
-
   
   .btn-confirmation:hover {
     cursor: pointer;

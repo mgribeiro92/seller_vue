@@ -1,57 +1,26 @@
 import { Auth } from './auth'
 import event from './event';
-import { useRouter } from 'vue-router'
 import router from '@/router';
-import { ref } from 'vue'
-
-const auth = new Auth()
-const currentUser = auth.currentUser()
-
-function replaceToken (token: string) {
-  if (localStorage.getItem('token')) {
-    localStorage.setItem('token', token)
-  } else {
-    sessionStorage.setItem('token',token)
-  }		
-}
 
 async function getStore() {
-  try {
-    const response = await fetch (
-      'http://127.0.0.1:3000/stores', {
-      method: 'GET',
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "Bearer" + ' ' + currentUser?.token
-        },           
-      })
-    const data = await response.json()
-    if(data.message == "Invalid token!") {
-      const newTokenResponse = await auth.newToken()
-      console.log(newTokenResponse)      
-      if (newTokenResponse.token) {
-        replaceToken(newTokenResponse.token)
-        window.location.reload()
-      } else {
-        setTimeout(() => {
-				event.emit("token_invalid", { 
-					msg: 'Session closed, please log in again!',					
-					alert: 'warning' 
-          })
-        }, 1000)
-        auth.signOut()
-        router.push('/sign_in')
-		  }
-    } else {
-      return data      
-    }      
-  } catch (error) {    
-    console.error('Erro ao carregar os dados:', error)
-  }
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
+  const response = await fetch (
+    'http://127.0.0.1:3000/stores', {
+    method: 'GET',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer" + ' ' + currentUser?.token
+      },           
+    })
+  const data = await response.json()    
+  return data  
 }
 
 async function newStore(name_store: string) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
   const body = {
     store: {
       name: name_store,
@@ -80,7 +49,63 @@ async function newStore(name_store: string) {
   }   
 }
 
+async function editStore(name_store: string, store_id: any) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
+  const body = {
+    store: {
+      name: name_store,
+    }
+  }
+  const response = await fetch(
+    import.meta.env.VITE_BASE_URL + '/stores/' + store_id, {
+    method: 'PUT',
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer" + ' ' + currentUser?.token
+    },
+    body: JSON.stringify(body)          
+  })
+  return await response.json()
+}
+
+async function getStoreAndProducts(store_id: any) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
+  const response = await fetch (
+    'http://127.0.0.1:3000/stores/' + store_id, {
+       method: "GET",
+       headers: {
+         "Accept": "application/json",
+         "Content-Type": "application/json",
+         "Authorization": "Bearer" + ' ' + currentUser?.token
+       }
+     }
+   )
+  return await response.json()
+}
+
+async function deleteStore(store_id: any) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser() 
+  const response = await fetch (
+    import.meta.env.VITE_BASE_URL + '/stores/' + store_id, {
+    method: "DELETE",
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer" + ' ' + currentUser?.token
+    },        
+  })
+  return await response.json()
+}
+
+
 export const stores = {
   getStore,
   newStore,
+  editStore,
+  deleteStore,
+  getStoreAndProducts
 }
