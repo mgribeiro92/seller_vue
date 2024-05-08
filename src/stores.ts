@@ -14,8 +14,7 @@ async function getStore() {
         "Authorization": "Bearer" + ' ' + currentUser?.token
       },           
     })
-  const data = await response.json()    
-  return data  
+  return await response.json()
 }
 
 async function newStore(name_store: string) {
@@ -39,7 +38,6 @@ async function newStore(name_store: string) {
   const data_store = await response.json()
   if(data_store) {
     setTimeout(() => {
-      console.log('evento emitido')
       event.emit("stores_url", {
         msg: 'Store created successfully!',					
         alert: 'success' 

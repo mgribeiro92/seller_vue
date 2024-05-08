@@ -64,7 +64,7 @@ async function createStore() {
   <div v-if="show_store" class="container">  
     <hr>
     <h3>Create a new store!</h3>
-    <div class="card">
+    <div style="width: 400px">
       <div class="form-outline mb-2">                  
         <label>Name</label>
         <input type="text" class="form-control" v-model="name_store">

@@ -30,15 +30,15 @@ const props = defineProps(['message', 'alert'])
   }
 
   #info {
-      color: #31708f;
-      background-color: #d9edf7;
-      border-color: #bce8f1;
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
   }
 
   #warning {
-      color: #8a6d3b;
-      background-color: #fcf8e3;
-      border-color: #faebcc;
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
   }
 
 </style>
