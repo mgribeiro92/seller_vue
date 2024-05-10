@@ -91,8 +91,7 @@ async function updatingProduct(product_id: any, old_product_title: any, old_prod
     product_price = old_product_price
   }
 
-  products.updateProduct(product_title, product_price, product_id, store_id)
-  update_product.value = null 
+  products.updateProduct(product_title, product_price, product_id, store_id)  
 }
 
 async function newProduct() {
@@ -111,8 +110,8 @@ function deletingProduct(product_id: number) {
 
 
 <template>
-
-  <Message v-if="msg" :message="msg" :alert="alert"/>
+  <notifications position="top center" class="my-custom-class" />
+  <Message v-if="msg" :message="msg" :alert="alert"/>  
   <div class="container">
     <div class="store-row">
       <div class="store-name">
@@ -161,7 +160,7 @@ function deletingProduct(product_id: number) {
                 <input type="text" :placeholder="product.title" v-model="update_product_title"></input>
               </td>
               <td v-show="update_product == product.id">
-                <input type="number" step="0.1" :placeholder="product.price" v-model='update_product_price'></input>                
+                <input type="number" step="0.01" :placeholder="product.price" v-model='update_product_price'></input>                
               </td>              
               <td v-show="update_product == product.id">
                 <img class="btn-confirmation" style="margin-right: 10px" @click="update_product = null" src="../assets/botao-x.png" alt="">
@@ -185,7 +184,7 @@ function deletingProduct(product_id: number) {
       </div>
       <div class="form-outline mb-4">                  
         <label>Price</label>
-        <input type="number" step="0.1" class="form-control" v-model="new_product_price">
+        <input type="number" step="0.01" class="form-control" v-model="new_product_price">
       </div>
       <input type="submit" class="btn-new-product" value="Create product"></input>
     </form>

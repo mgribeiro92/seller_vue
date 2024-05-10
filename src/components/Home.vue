@@ -17,7 +17,8 @@ const alert = ref('')
 
 onMounted(() => {
   auth.verifyToken()
-
+  auth.validToken()
+  
 	event.on("sign_in", (dados: any) => {
 		msg.value = dados.msg
 		alert.value = dados.alert   

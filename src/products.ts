@@ -49,7 +49,7 @@ async function updateProduct(product_title: any, product_price: number, product_
     body: JSON.stringify(body)          
   })
   if(response.status == 200) {    
-    window.location.reload()
+    window.location.reload()   
   }
 }
 
@@ -66,7 +66,7 @@ async function deleteProduct(product_id: any) {
       "Authorization": "Bearer" + ' ' + currentUser?.token
     },      
   })
-  window.location.reload()
+  window.location.reload()  
 }
 
 export const products = {

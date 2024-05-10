@@ -49,9 +49,13 @@ async function createStore() {
     <h3>Stores</h3>
     <hr>
     <div class="stores">
-      <div class="card-store"  v-for = "store in stores_data" :key = "store.id">
-        <h5 class="card-title">{{ store.name }}</h5>
-        <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show store and products</RouterLink>
+      <div class="card-store" v-for = "store in stores_data" :key = "store.id">
+        <div class="card-store-front">
+          <h5 class="card-title">{{ store.name }}</h5>
+        </div>
+        <div class="card-store-back">
+          <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show store and products</RouterLink>
+        </div>        
       </div>
       <div class="card-store">
         <img src="../assets/mais.png" alt="">
@@ -91,6 +95,11 @@ async function createStore() {
 
 <style scoped>
 
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
   .stores-title {
     padding: 0px 30px;
     margin: 10px 50px;  
@@ -101,17 +110,47 @@ async function createStore() {
     flex-wrap: wrap;
   }
 
-  .card-store{
+  .card-store {
     margin: 10px;
     width: 16rem;
     height: 8rem;
-    border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    text-align: left;
-    border-left: 2px solid #a32020;
+    position: relative;
+    perspective: 800px;
   }
-  
+
+  .card-store-front, .card-store-back {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .card-store-front {
+    background-color: white;
+    color: #a32020;
+    border-left: 2px solid #a32020;
+    padding: 10px;
+  }
+
+  .card-store-back {
+    background-color: #a32020;
+    color: white;
+    transform: rotateY(-180deg);
+  }
+    
+  .card-store:hover .card-store-front {
+    transform: rotateY(180deg);
+  }
+
+  .card-store:hover .card-store-back {
+    transform: rotateY(0)
+  }
 
   img {
     width: 50px;

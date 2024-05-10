@@ -91,7 +91,6 @@ class Auth {
 	}
 
 	async newToken() {
-		console.log('new token vai ser criado')
 		const body = {
 			refresh_token: this.getFallback('refresh_token')
 		}
@@ -115,6 +114,7 @@ class Auth {
 				alert: "warning" 
 				})
 			}, 500)
+			this.signOut()
 			router.push('/sign_in')
 		}
 	}
@@ -139,8 +139,7 @@ class Auth {
 		})
     const data = await response.json()
 		if(data.message == "Invalid token!") {
-      const newTokenResponse = await this.newToken()
-      console.log(newTokenResponse)      
+      const newTokenResponse = await this.newToken()   
       if (newTokenResponse.token) {
         this.replaceToken(newTokenResponse.token)
         window.location.reload()
