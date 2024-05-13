@@ -69,7 +69,7 @@ async function deleteProduct(product_id: any) {
   window.location.reload()  
 }
 
-export const products = {
+export const product = {
   updateProduct,
   createProduct,
   deleteProduct

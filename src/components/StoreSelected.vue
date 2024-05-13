@@ -1,0 +1,137 @@
+<script setup lang="ts">
+
+import StoreProducts from './StoreProducts.vue';
+import Message from './Message.vue';
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router';
+import { Auth } from '@/auth'
+import { stores } from '@/stores'
+import event from '@/event'
+import StoreUpdate from './StoreUpdate.vue'
+
+const products = ref()
+const store = ref([])
+const msg = ref('')
+const alert = ref('')
+const update_store = ref(false)
+const show_modal = ref(false)
+
+const name_store_edit = defineModel<string>('name_store_edit')
+
+const auth = new Auth()
+const router = useRouter()
+const route = useRoute()
+const store_id = route.params.storeId
+const localhost = "http://127.0.0.1:3000/"
+
+const loadData = async () => {
+  auth.verifyToken()
+  try {
+    await auth.validToken()
+  } finally {
+    const store_data = await stores.getStoreAndProducts(store_id)
+    console.log(store_data)
+    store.value = store_data
+    if(store_data.products.length != 0) {
+      products.value = store_data.products
+    }
+    event.on("products_url", (dados: any) => {
+    msg.value = dados.msg
+    alert.value = dados.alert
+  })
+  }
+}
+
+onMounted(loadData);
+
+async function editingStore() {
+  const data_edit =  await stores.editStore(name_store_edit.value || '', store_id)
+  console.log(data_edit)
+  if(data_edit.id) {
+    update_store.value = false
+    store.value = data_edit.name
+    msg.value = "Store updated successfully!"
+    alert.value = "success"
+  }
+  console.log(data_edit.name)
+}
+
+async function deletingStore() {
+  console.log('aqui vai deletar a store')
+  const data_edit = await stores.deleteStore(store_id)
+  if (data_edit.message = "Store destroyed!") {
+    setTimeout(() => {
+      event.emit("stores_url", {
+        msg: 'Store deleted successfully!',					
+        alert: 'success' 
+        })
+      }, 500)
+    router.push('/stores')  }
+}
+
+
+</script>
+
+
+<template>
+
+  <Message v-if="msg" :message="msg" :alert="alert"/>  
+  <div class="container">
+    <div class="store-row">
+      <div class="store-name">
+        <img :src="localhost + store.image_url">
+        <h3 v-show="!update_store">{{ store.name }}</h3>
+        <input v-show="update_store" class="form-control" style="width:300px" :placeholder="store.name" v-model="name_store_edit"></input>
+        <img v-show="update_store" class="btn-confirmation" @click="update_store = false" src="../assets/botao-x.png" alt="">
+        <img v-show="update_store" class="btn-confirmation" @click="editingStore()" src="../assets/verificar.png" alt="">
+      </div>
+      <div class="store-edit-destroy">
+        <button class='btn-edit-destroy' @click="update_store = true ">Update</button>
+        <button class='btn-edit-destroy' @click="show_modal = true">Delete</button>
+      </div>      
+    </div> 
+    <StoreProducts v-if="!update_store" :store_id="store_id" :products="products"/>
+    <StoreUpdate v-show="update_store" :store_id="store_id"/>
+  </div>
+  
+
+  <div v-if="show_modal" class="modal">
+    <div class="modal-content">
+      <h5>Are you sure want to delete this store?</h5>      
+      <div class="btn-confirmation-row">
+        <img class="btn-confirmation" @click="show_modal = false" src="../assets/botao-x.png" alt="">
+        <img class="btn-confirmation" @click="deletingStore()" src="../assets/verificar.png" alt="">
+      </div>      
+    </div>
+  </div> 
+  
+
+</template>
+
+<style>
+
+  img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+  }
+
+  .store-row {
+    display: flex;
+  }
+
+  .store-name {
+    flex: 80%;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .store-edit-destroy {
+    flex: 20%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+</style>

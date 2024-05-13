@@ -26,6 +26,9 @@ const logOut = function() {
         <li class="nav-item">          
           <RouterLink class="nav-link" to="/stores">Stores</RouterLink>
         </li>
+        <li class="nav-item">          
+          <RouterLink class="nav-link" to="/orders">Orders</RouterLink>
+        </li>
                                
       </ul>        
       <ul class="d-flex navbar-nav">

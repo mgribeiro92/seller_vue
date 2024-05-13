@@ -17,6 +17,7 @@ const msg = ref('')
 const alert = ref('')
 const show_store = ref(false)
 const show_modal = ref(false)
+const localhost = "http://127.0.0.1:3000/"
 
 onMounted(async () => {
   auth.verifyToken()
@@ -24,8 +25,8 @@ onMounted(async () => {
     await auth.validToken()    
   } finally {
     stores_data.value = await stores.getStore()
+    console.log(stores_data.value)
   }  
-  console.log(stores_data.value)
   event.on("stores_url", (dados: any) => {
     msg.value = dados.msg
     alert.value = dados.alert
@@ -51,10 +52,12 @@ async function createStore() {
     <div class="stores">
       <div class="card-store" v-for = "store in stores_data" :key = "store.id">
         <div class="card-store-front">
+          <img :src="localhost + store.image_url">
           <h5 class="card-title">{{ store.name }}</h5>
+
         </div>
         <div class="card-store-back">
-          <RouterLink :to="{ name: 'products', params: { storeId: store.id }}">Show store and products</RouterLink>
+          <RouterLink :to="{ name: 'store', params: { storeId: store.id }}">Show store and products</RouterLink>
         </div>        
       </div>
       <div class="card-store">

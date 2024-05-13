@@ -1,79 +1,22 @@
 <script setup lang="ts">
 
-import Message from './Message.vue';
-import { ref, onMounted, onUpdated } from 'vue'
-import { useRoute } from 'vue-router';
-import router from '@/router';
-import { Auth } from '@/auth'
-import { stores } from '@/stores'
-import { products } from '@/products'
+import { ref } from 'vue'
 import event from '@/event'
+import { product } from '@/products'
 
-const store_products = ref()
-const store = ref('')
-const msg = ref('')
-const alert = ref('')
-const update_store = ref(false)
+const {products, store_id} = defineProps(['products', 'store_id'])
+
+console.log(products)
 const update_product = ref(null)
-const show_modal = ref(false)
 const new_product = ref(false)
 
-const name_store_edit = defineModel<string>('name_store_edit')
 const update_product_title = defineModel<string>('update_title_product')
 const update_product_price = defineModel<number>('update_price_product')
 const new_product_title = defineModel<string>('new_title_product')
 const new_product_price = defineModel<number>('new_price_product')
 
-
-const auth = new Auth()
-const currentUser = auth.currentUser()
-
-const route = useRoute()
-const store_id = route.params.storeId
-
-onMounted(async () => {
-  auth.verifyToken()
-  try {
-    await auth.validToken()
-  } finally {
-    const store_data = await stores.getStoreAndProducts(store_id)
-    store.value = store_data.store.name
-    console.log(store_data.products)
-    if(store_data.products.length != 0) {
-      store_products.value = store_data.products
-    }
-    event.on("products_url", (dados: any) => {
-    msg.value = dados.msg
-    alert.value = dados.alert
-  })
-  }
-})
-
-async function editingStore() {
-  const data_edit =  await stores.editStore(name_store_edit.value || '', store_id)
-  console.log(data_edit)
-  if(data_edit.id) {
-    update_store.value = false
-    store.value = data_edit.name
-    msg.value = "Store updated successfully!"
-    alert.value = "success"
-  }
-  console.log(data_edit.name)
-}
-
-async function deletingStore() {
-  console.log('aqui vai deletar a store')
-  const data_edit = await stores.deleteStore(store_id)
-  if (data_edit.message = "Store destroyed!") {
-    setTimeout(() => {
-      event.emit("stores_url", {
-        msg: 'Store deleted successfully!',					
-        alert: 'success' 
-        })
-      }, 500)
-    router.push('/stores')  }
-
-}
+const msg = ref('')
+const alert = ref('')
 
 async function updatingProduct(product_id: any, old_product_title: any, old_product_price: any) {
   let product_title: string;
@@ -91,11 +34,11 @@ async function updatingProduct(product_id: any, old_product_title: any, old_prod
     product_price = old_product_price
   }
 
-  products.updateProduct(product_title, product_price, product_id, store_id)  
+  product.updateProduct(product_title, product_price, product_id, store_id)  
 }
 
 async function newProduct() {
-  const new_product_response = await products.createProduct(new_product_title.value || '', new_product_price.value, store_id)
+  const new_product_response = await product.createProduct(new_product_title.value || '', new_product_price.value, store_id)
   if(new_product_response) {
     msg.value = "Product was not created, try again",
     alert.value = "error"
@@ -103,30 +46,15 @@ async function newProduct() {
 }
 
 function deletingProduct(product_id: number) {
-  products.deleteProduct(product_id)
+  product.deleteProduct(product_id)
 }
 
 </script>
 
 
 <template>
-  <notifications position="top center" class="my-custom-class" />
-  <Message v-if="msg" :message="msg" :alert="alert"/>  
-  <div class="container">
-    <div class="store-row">
-      <div class="store-name">
-        <h3 v-show="!update_store">{{ store }}</h3>
-        <input v-show="update_store" class="form-control" style="width:300px" :placeholder="store" v-model="name_store_edit"></input>
-        <img v-show="update_store" class="btn-confirmation" @click="update_store = false" src="../assets/botao-x.png" alt="">
-        <img v-show="update_store" class="btn-confirmation" @click="editingStore()" src="../assets/verificar.png" alt="">
-      </div>
-      <div class="store-edit-destroy">
-        <button class='btn-edit-destroy' @click="update_store = true ">Editar</button>
-        <button class='btn-edit-destroy' @click="show_modal = true">Excluir</button>
-      </div>      
-    </div>
     <hr>   
-    <div v-if="!store_products">
+    <div v-if="!products">
       <div class="row">
         <p class="col">Não existe produtos para essa loja!</p>
         <button class="col-4 btn-new-product" @click="new_product = true">New product</button>
@@ -148,7 +76,7 @@ function deletingProduct(product_id: number) {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="product in store_products" :key="product.id">
+            <tr v-for="product in products" :key="product.id">
 
               <td v-show="update_product != product.id">{{ product.title }}</td>              
               <td v-show="update_product != product.id">{{ product.price }}</td>
@@ -174,7 +102,6 @@ function deletingProduct(product_id: number) {
           </tbody>
       </table>   
     </div>
-  </div>
 
   <div class="container" v-show="new_product == true">
     <form class="form-new-product" @submit.prevent="newProduct()">
@@ -188,39 +115,11 @@ function deletingProduct(product_id: number) {
       </div>
       <input type="submit" class="btn-new-product" value="Create product"></input>
     </form>
-  </div>
+  </div>  
 
-  <div v-if="show_modal" class="modal">
-    <div class="modal-content">
-      <h5>Are you sure want to delete this store?</h5>      
-      <div class="btn-confirmation-row">
-        <img class="btn-confirmation" @click="show_modal = false" src="../assets/botao-x.png" alt="">
-        <img class="btn-confirmation" @click="deletingStore()" src="../assets/verificar.png" alt="">
-      </div>      
-    </div>
-  </div>
-  
-  
 </template>
 
 <style>
-
-  .store-row {
-    display: flex;
-  }
-
-  .store-name {
-    flex: 80%;
-    margin-top: 10px;
-    display: flex;
-    gap: 20px;
-  }
-
-  .store-edit-destroy {
-    flex: 20%;
-    display: flex;
-    justify-content: space-between;
-  }
 
   .form-new-product {
     width: 300px;
@@ -304,16 +203,6 @@ function deletingProduct(product_id: number) {
     justify-content: center;
     gap: 30px
   }
-  
-  /* .tabela{
-    width: 500px;
-    margin: 20px 0px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 10px;
-    text-align: left;
-    border-left: 2px solid #a32020;
-  } */
 
   table { 
     width: auto;  
@@ -326,6 +215,7 @@ function deletingProduct(product_id: number) {
     border-bottom: 1px solid #ddd;
     text-align: left;
     font-size: 15;
+    height: 45px;
   }
 
 </style>

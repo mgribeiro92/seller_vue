@@ -7,7 +7,7 @@ async function getStore() {
   const currentUser = auth.currentUser()
   const response = await fetch (
     'http://127.0.0.1:3000/stores', {
-    method: 'GET',
+      method: 'GET',
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
@@ -100,10 +100,34 @@ async function deleteStore(store_id: any) {
 }
 
 
+async function uploadImageStore(imagem: File, store_id: number) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser() 
+  if (imagem) {
+    const formData = new FormData();
+    formData.append('store[image]', imagem);
+    const response = await fetch(
+      import.meta.env.VITE_BASE_URL + '/stores/' + store_id, {
+        method: 'PUT',
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer" + ' ' + currentUser?.token, 
+        },
+        body: formData,
+      }
+    )
+    const resposta = await response.json()
+    console.log(resposta)
+  } else {
+    console.error('Nenhuma imagem selecionada.');
+  }
+};
+
 export const stores = {
   getStore,
   newStore,
   editStore,
   deleteStore,
-  getStoreAndProducts
+  getStoreAndProducts,
+  uploadImageStore
 }
