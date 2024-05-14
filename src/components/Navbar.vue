@@ -25,11 +25,7 @@ const logOut = function() {
         </li>
         <li class="nav-item">          
           <RouterLink class="nav-link" to="/stores">Stores</RouterLink>
-        </li>
-        <li class="nav-item">          
-          <RouterLink class="nav-link" to="/orders">Orders</RouterLink>
-        </li>
-                               
+        </li>                  
       </ul>        
       <ul class="d-flex navbar-nav">
         <li class="nav-item">
@@ -49,23 +45,23 @@ const logOut = function() {
   nav {      
     background:	white;
     width: 100%;
-    border-bottom: 2px solid #a32020;
+    border-bottom: 2px solid #e11b16;
   }
 
   .nav-link {
-    color: #a32020;
+    color: 	#e11b16;
     border-radius: 50px;
   }
 
 
   .nav-link:hover {
-    background-color: #a32020;
+    background-color: #e11b16;
     border-radius: 50px;
     color: white;
   }
 
   .navbar-brand {
-    color: #a32020;
+    color:	#e11b16;
   }
   
 </style>

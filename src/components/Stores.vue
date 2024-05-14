@@ -52,15 +52,14 @@ async function createStore() {
     <div class="stores">
       <div class="card-store" v-for = "store in stores_data" :key = "store.id">
         <div class="card-store-front">
-          <img :src="localhost + store.image_url">
           <h5 class="card-title">{{ store.name }}</h5>
-
         </div>
         <div class="card-store-back">
+          <h5 class="card-title">{{ store.name }}</h5>
           <RouterLink :to="{ name: 'store', params: { storeId: store.id }}">Show store and products</RouterLink>
         </div>        
       </div>
-      <div class="card-store">
+      <div class="card-store" style="padding: 15px">
         <img src="../assets/mais.png" alt="">
         <p></p>
         <button @click="show_store = true" class="btn-store">Create a new store</button>      
@@ -145,6 +144,10 @@ async function createStore() {
     background-color: #a32020;
     color: white;
     transform: rotateY(-180deg);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
   }
     
   .card-store:hover .card-store-front {

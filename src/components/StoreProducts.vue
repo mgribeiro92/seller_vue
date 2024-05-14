@@ -125,23 +125,6 @@ function deletingProduct(product_id: number) {
     width: 300px;
   }
 
-  .btn-edit-destroy {    
-		padding: 0px 10px;
-		margin: 10px 0px;  
-		color: #a32020;
-		background-color: white;
-		border-radius: 4px;
-		cursor: pointer;
-		height: 30px;
-    width: 100px;
-		border: 1px solid #a32020;
-	}
-
-  .btn-edit-destroy:hover {
-    color: white;
-    background-color: #a32020;
-  }
-
   .btn-new-product {    
 		padding: 0px 10px;
 		margin: 0px 0px;  

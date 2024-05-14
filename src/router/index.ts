@@ -30,7 +30,7 @@ const router = createRouter({
       component: StoreSelectedView,        
     },  
     {
-      path: '/orders',
+      path: '/orders/:storeId',
       name: 'orders',      
       component: OrdersView,        
     },  

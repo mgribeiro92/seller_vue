@@ -9,8 +9,18 @@ import { stores } from '@/stores'
 import event from '@/event'
 import StoreUpdate from './StoreUpdate.vue'
 
+
+interface StoreItem {
+    id: number;
+    name: string;
+    created_at: string;
+    updated_at: string;
+    image_url: string;
+    // outras propriedades, se houver
+}
+
 const products = ref()
-const store = ref([])
+const store = ref({ id: 0, name: '', created_at: '', updated_at: '', image_url: '', products: [], update_at: '', url: '' });
 const msg = ref('')
 const alert = ref('')
 const update_store = ref(false)
@@ -66,7 +76,8 @@ async function deletingStore() {
         alert: 'success' 
         })
       }, 500)
-    router.push('/stores')  }
+    router.push('/stores')  
+  }
 }
 
 
@@ -79,13 +90,14 @@ async function deletingStore() {
   <div class="container">
     <div class="store-row">
       <div class="store-name">
-        <img :src="localhost + store.image_url">
+        <img v-if="store.image_url" :src="localhost + store.image_url">
         <h3 v-show="!update_store">{{ store.name }}</h3>
         <input v-show="update_store" class="form-control" style="width:300px" :placeholder="store.name" v-model="name_store_edit"></input>
         <img v-show="update_store" class="btn-confirmation" @click="update_store = false" src="../assets/botao-x.png" alt="">
         <img v-show="update_store" class="btn-confirmation" @click="editingStore()" src="../assets/verificar.png" alt="">
       </div>
       <div class="store-edit-destroy">
+        <RouterLink class="btn-edit-destroy" :to="{ name: 'orders', params: { storeId: store.id }}">Orders</RouterLink>
         <button class='btn-edit-destroy' @click="update_store = true ">Update</button>
         <button class='btn-edit-destroy' @click="show_modal = true">Delete</button>
       </div>      
@@ -110,6 +122,13 @@ async function deletingStore() {
 
 <style>
 
+  a {
+    text-decoration: none;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+
   img {
     width: 80px;
     height: 80px;
@@ -121,17 +140,35 @@ async function deletingStore() {
   }
 
   .store-name {
-    flex: 80%;
+    flex: 90%;
     display: flex;
     gap: 20px;
     align-items: center;
+    color: #ed911f;
   }
 
   .store-edit-destroy {
-    flex: 20%;
+    flex: 10%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .btn-edit-destroy {    
+		padding: 0px 10px;
+		margin: 0px 10px;  
+		color: #ed911f;
+		background-color: white;
+		border-radius: 4px;
+		cursor: pointer;
+		height: 30px;
+    width: 100px;
+		border: 1px solid #ed911f;
+	}
+
+  .btn-edit-destroy:hover {
+    color: white;
+    background-color: #ed911f;
   }
 
 </style>
