@@ -1,22 +1,20 @@
 <script setup lang="ts">
 
 import { ref } from 'vue'
-import { Auth } from '@/auth'
 import { stores } from '@/stores'
-
-const auth = new Auth()
-const currentUser = auth.currentUser()
 
 const {store_id} = defineProps(['store_id'])
 
 const fileInput = ref()
 let imagemSelecionada: File
 
-const handleFileInputChange = () => {
-  const files = fileInput.value.files;
-  if (files.length > 0) {
-    imagemSelecionada = files[0];
-  }
+function handleFileInputChange() {
+  const files = fileInput.value.files
+  console.log(files)
+  // if (files.length > 0) {
+  //   imagemSelecionada = files[0];
+  // }
+  // console.log(imagemSelecionada)
 }
 
 function uploadImage() {

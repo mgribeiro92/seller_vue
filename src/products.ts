@@ -2,9 +2,10 @@ import { Auth } from './auth'
 import event from './event';
 import router from '@/router';
 
+const auth = new Auth()
+const currentUser = auth.currentUser()
+
 async function createProduct(product_title: string, product_price: any, store_id: any) {
-  const auth = new Auth()
-  const currentUser = auth.currentUser()
   const body = {
     product: {
       title: product_title,
@@ -69,8 +70,24 @@ async function deleteProduct(product_id: any) {
   window.location.reload()  
 }
 
+async function uploadImageProduct(image: File, product_id: number) {
+  const formData = new FormData()
+  formData.append('product[image_product]', image);
+  const response = await fetch(
+    import.meta.env.VITE_BASE_URL + '/products/' + product_id, {
+      method: 'PUT',
+      headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer" + ' ' + currentUser?.token, 
+      },
+      body: formData,
+    }
+  )
+}
+
 export const product = {
   updateProduct,
   createProduct,
-  deleteProduct
+  deleteProduct,
+  uploadImageProduct
 }

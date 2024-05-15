@@ -9,16 +9,6 @@ import { stores } from '@/stores'
 import event from '@/event'
 import StoreUpdate from './StoreUpdate.vue'
 
-
-interface StoreItem {
-    id: number;
-    name: string;
-    created_at: string;
-    updated_at: string;
-    image_url: string;
-    // outras propriedades, se houver
-}
-
 const products = ref()
 const store = ref({ id: 0, name: '', created_at: '', updated_at: '', image_url: '', products: [], update_at: '', url: '' });
 const msg = ref('')
@@ -32,7 +22,7 @@ const auth = new Auth()
 const router = useRouter()
 const route = useRoute()
 const store_id = route.params.storeId
-const localhost = "http://127.0.0.1:3000/"
+const localhost = import.meta.env.VITE_BASE_URL
 
 const loadData = async () => {
   auth.verifyToken()
@@ -42,6 +32,7 @@ const loadData = async () => {
     const store_data = await stores.getStoreAndProducts(store_id)
     console.log(store_data)
     store.value = store_data
+    console.log(store_data.products)
     if(store_data.products.length != 0) {
       products.value = store_data.products
     }
