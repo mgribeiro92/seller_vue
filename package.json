@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^3.2.1",
+    "@rails/actioncable": "^7.0.8-3",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mitt": "^3.0.1",
@@ -30,6 +31,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/jwt-decode": "^3.1.0",
     "@types/node": "^20.12.5",
+    "@types/rails__actioncable": "^6.1.10",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vitejs/plugin-vue-jsx": "^3.1.0",
     "@vue/eslint-config-prettier": "^9.0.0",

@@ -24,8 +24,7 @@ onMounted(async () => {
   try {
     await auth.validToken()    
   } finally {
-    stores_data.value = await stores.getStore()
-    console.log(stores_data.value)
+    stores_data.value = await stores.getStores()
   }  
   event.on("stores_url", (dados: any) => {
     msg.value = dados.msg

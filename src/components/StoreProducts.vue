@@ -1,13 +1,13 @@
 <script setup lang="ts">
 
-import { ref } from 'vue'
-import { product } from '@/products'
-import { couldStartTrivia } from 'typescript';
+import { ref, onMounted } from 'vue'
+import { products } from '@/products'
 
-const {products, store_id} = defineProps(['products', 'store_id'])
+const {store_id} = defineProps(['store_id'])
 
 const update_product = ref(null)
 const new_product = ref(false)
+const products_data = ref()
 
 const update_product_title = defineModel<string>('update_title_product')
 const update_product_price = defineModel<number>('update_price_product')
@@ -18,6 +18,12 @@ const msg = ref('')
 const alert = ref('')
 const localhost = import.meta.env.VITE_BASE_URL
 
+onMounted(async () => {
+  products_data.value = await products.getProducts(store_id)
+  console.log(products_data.value) 
+
+})
+
 const fileInput = ref()
 let imageSelected: File
 
@@ -25,7 +31,6 @@ const handleFileInput = (event: any) => {
   imageSelected = event.target.files[0];
   console.log(imageSelected)
 }
-
 
 async function updatingProduct(product_id: any, old_product_title: any, old_product_price: any) {
   let product_title: string;
@@ -43,14 +48,14 @@ async function updatingProduct(product_id: any, old_product_title: any, old_prod
     product_price = old_product_price
   }
 
-  product.updateProduct(product_title, product_price, product_id, store_id)
+  products.updateProduct(product_title, product_price, product_id, store_id)
   if(imageSelected) {
-    product.uploadImageProduct(imageSelected, product_id)  
+    products.uploadImageProduct(imageSelected, product_id)  
   }
 }
 
 async function newProduct() {
-  const new_product_response = await product.createProduct(new_product_title.value || '', new_product_price.value, store_id)
+  const new_product_response = await products.createProduct(new_product_title.value || '', new_product_price.value, store_id)
   if(new_product_response) {
     msg.value = "Product was not created, try again",
     alert.value = "error"
@@ -58,7 +63,7 @@ async function newProduct() {
 }
 
 function deletingProduct(product_id: number) {
-  product.deleteProduct(product_id)
+  products.deleteProduct(product_id)
 }
 
 </script>
@@ -81,7 +86,7 @@ function deletingProduct(product_id: number) {
     <table v-show="new_product == false">      
         <thead>
           <tr>
-            <th style="width: 120px">Image</th>
+            <th style="width: 120px"></th>
             <th style="width: 200px">Name</th>
             <th style="width: 100px">Price</th>
             <th style="width: 120px">Update</th>
@@ -90,7 +95,7 @@ function deletingProduct(product_id: number) {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="product in products" :key="product.id">
+          <tr v-for="product in products_data" :key="product.id">
 
             <td>
               <img v-if="product.image_url" :src="localhost + product.image_url">

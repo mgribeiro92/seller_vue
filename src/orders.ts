@@ -15,17 +15,25 @@ async function getOrders(store_id: any) {
   return await response.json()
 }
 
-async function changeState(state: string, product_id: number) {
+async function changeState(state: string, order_id: number) {
+  const body = {
+    order: {
+      id: order_id,
+      state: state,
+    }
+  }
   const response = await fetch(
-    import.meta.env.VITE_BASE_URL + '/orders/' + state + '/' + product_id, {
+    import.meta.env.VITE_BASE_URL + '/change_state', {
     method: 'POST',
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json",
       "Authorization": "Bearer" + ' ' + currentUser?.token
-    },       
+    },
+    body: JSON.stringify(body)     
   })
-  return await response.json()
+  const resposta = await response.json()
+  console.log(resposta)
 }
 
 export const orders = {

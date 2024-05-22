@@ -11,9 +11,9 @@ let imagemSelecionada: File
 function handleFileInputChange() {
   const files = fileInput.value.files
   console.log(files)
-  // if (files.length > 0) {
-  //   imagemSelecionada = files[0];
-  // }
+  if (files.length > 0) {
+    imagemSelecionada = files[0];
+  }
   // console.log(imagemSelecionada)
 }
 

@@ -1,9 +1,21 @@
 import { Auth } from './auth'
-import event from './event';
-import router from '@/router';
 
 const auth = new Auth()
 const currentUser = auth.currentUser()
+
+async function getProducts(store_id: any) {
+  const response = await fetch(
+    import.meta.env.VITE_BASE_URL + '/products/store/' + store_id, {
+      method: 'GET',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer" + ' ' + currentUser?.token
+      },
+    }
+  )
+  return await response.json()
+}
 
 async function createProduct(product_title: string, product_price: any, store_id: any) {
   const body = {
@@ -85,7 +97,8 @@ async function uploadImageProduct(image: File, product_id: number) {
   )
 }
 
-export const product = {
+export const products = {
+  getProducts,
   updateProduct,
   createProduct,
   deleteProduct,

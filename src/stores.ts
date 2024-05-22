@@ -2,7 +2,7 @@ import { Auth } from './auth'
 import event from './event';
 import router from '@/router';
 
-async function getStore() {
+async function getStores() {
   const auth = new Auth()
   const currentUser = auth.currentUser()
   const response = await fetch (
@@ -68,7 +68,7 @@ async function editStore(name_store: string, store_id: any) {
   return await response.json()
 }
 
-async function getStoreAndProducts(store_id: any) {
+async function getStore(store_id: any) {
   const auth = new Auth()
   const currentUser = auth.currentUser()
   const response = await fetch (
@@ -116,8 +116,6 @@ async function uploadImageStore(imagem: File, store_id: number) {
         body: formData,
       }
     )
-    const resposta = await response.json()
-    console.log(resposta)
   } else {
     console.error('Nenhuma imagem selecionada.');
   }
@@ -125,9 +123,9 @@ async function uploadImageStore(imagem: File, store_id: number) {
 
 export const stores = {
   getStore,
+  getStores,
   newStore,
   editStore,
   deleteStore,
-  getStoreAndProducts,
   uploadImageStore
 }

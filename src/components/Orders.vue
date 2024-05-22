@@ -6,7 +6,8 @@ import { useRouter, useRoute } from 'vue-router';
 import { orders } from '@/orders'
 import { stores } from '@/stores'
 import draggable from 'vuedraggable';
-import { product } from "@/products";
+import { products } from "@/products";
+import Message from "./Message.vue";
 
 const auth = new Auth()
 const store = ref({ id: 0, name: '', created_at: '', updated_at: '', image_url: '', products: [], update_at: '', url: '' });
@@ -16,6 +17,10 @@ const orders_accepted = ref([])
 const orders_rejected = ref([])
 const orders_delivery = ref([])
 const orders_finished = ref([])
+const msg = ref('')
+const alert = ref('')
+const show_order = ref(false)
+const selected_order = ref()
 
 const route = useRoute()
 const store_id = route.params.storeId
@@ -26,23 +31,30 @@ onMounted(async () => {
   try {
     await auth.validToken()    
   } finally {
-    store.value = await stores.getStoreAndProducts(store_id)
+    store.value = await stores.getStore(store_id)
     orders_data.value = await orders.getOrders(store_id)
+    // console.log(orders_data.value)
     orders_created.value = orders_data.value.filter((item: { state: string; }) => item.state === 'created')
     orders_accepted.value = orders_data.value.filter((item: { state: string; }) => item.state === 'accepted')
+    orders_delivery.value = orders_data.value.filter((item: { state: string; }) => item.state === 'delivery')
+    orders_finished.value = orders_data.value.filter((item: { state: string; }) => item.state === 'finished')
+    orders_rejected.value = orders_data.value.filter((item: { state: string; }) => item.state === 'rejected')
   }
 })
 
-async function dragAdd(event: any) {
+
+async function dragAdd(event: any) { 
   const state = event.to.id
-  const product_id = event.item.id
-  // try {
-  //   await orders.changeState(state, product_id)
-  // } finally {
-  //   window.location.reload()
-  // }
+  const order_id = event.item.id
   console.log(state)
-  console.log(product_id)
+  try {
+    await orders.changeState(state, order_id)
+  } finally {
+    window.location.reload()
+  }
+  msg.value = "TESTE"
+  console.log(state)
+  console.log(order_id)
 }
 
 type DateTimeFormatOptions = any
@@ -52,12 +64,18 @@ function transformarData(dataString: string | number | Date) {
   return data.toLocaleString('pt-BR', options);
 }
 
+function showOrder(order_id: any) {
+  selected_order.value = orders_data.value.find((order: { id: any; }) => order.id === order_id)
+  console.log(selected_order.value)
+  show_order.value = !show_order.value
+}
+
 </script>
 
 <template>
 
-  <div class="container">
-
+  <Message v-if="msg" :message="msg" :alert="alert"/>
+  <div class="container">   
     <div class="store-row">
       <div class="store-name">
         <img v-if="store.image_url" :src="localhost + store.image_url">
@@ -68,9 +86,7 @@ function transformarData(dataString: string | number | Date) {
       </div>      
     </div>
     <hr>
-  </div>
-
-  
+  </div>  
   <div class="orders-card container">  
     
     <div class="card-col">   
@@ -84,11 +100,13 @@ function transformarData(dataString: string | number | Date) {
         :animation="300" 
         @add="dragAdd">
         <template #item="{ element: order }">
-          <div :id="order.id" class="card-drag created-card">
+          <div :id="order.id" class="card-drag created-card" @dblclick="showOrder(order.id)">
             <h5>Order {{ order.id }}</h5>
-            <p>Buyer: {{ order.buyer_id }}</p>
-            <p>Created: {{ transformarData(order.created_at) }}</p>
-            <p>State: {{ order.state }}</p>    
+            <div v-for="order_item in order.order_items">
+              <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.price }}</p>
+            </div>
+            <!-- <p>Created: {{ transformarData(order.created_at) }}</p> -->
+            <p>Pedido Criado</p>    
           </div>
         </template>
       </draggable>
@@ -106,11 +124,12 @@ function transformarData(dataString: string | number | Date) {
         :animation="300"
         @add="dragAdd">
         <template #item="{ element: order }">
-          <div :id="order.id" class="card-drag accepted-card">
+          <div :id="order.id" class="card-drag accepted-card" @dblclick="showOrder(order.id)">
             <h5>Order {{ order.id }}</h5>
-            <p>Buyer: {{ order.buyer_id }}</p>
-            <p>Created: {{ transformarData(order.created_at) }}</p>
-            <p>State: {{ order.state }}</p>           
+            <div v-for="order_item in order.order_items">
+              <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.price }}</p>
+            </div>
+            <p>Pedido Aceito</p>          
           </div>
         </template>
       </draggable>
@@ -128,11 +147,12 @@ function transformarData(dataString: string | number | Date) {
         :animation="300"
         @add="dragAdd">
         <template #item="{ element: order }">
-          <div :id="order.id" class="card-drag delivery-card">
+          <div :id="order.id" class="card-drag delivery-card" @dblclick="showOrder(order.id)">
             <h5>Order {{ order.id }}</h5>
-            <p>Buyer: {{ order.buyer_id }}</p>
-            <p>Created: {{ transformarData(order.created_at) }}</p>
-            <p>State: {{ order.state }}</p>           
+            <div v-for="order_item in order.order_items">
+              <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.price }}</p>
+            </div>
+            <p>Pedido em Entrega</p>          
           </div>
         </template>
       </draggable>
@@ -144,17 +164,18 @@ function transformarData(dataString: string | number | Date) {
         style="height: 100%" 
         v-model="orders_finished" 
         :itemKey="(item: any) => item" 
-        id="finish" 
+        id="finished" 
         :options="{ put: true }"
         group="orders"
         :animation="300"
         @add="dragAdd">
         <template #item="{ element: order }">
-          <div :id="order.id" class="card-drag finished-card">
+          <div :id="order.id" class="card-drag finished-card" @dblclick="showOrder(order.id)">
             <h5>Order {{ order.id }}</h5>
-            <p>Buyer: {{ order.buyer_id }}</p>
-            <p>Created: {{ transformarData(order.created_at) }}</p>
-            <p>State: {{ order.state }}</p>           
+            <div v-for="order_item in order.order_items">
+              <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.price }}</p>
+            </div>
+            <p>Pedido Finalizado</p>         
           </div>
         </template>
       </draggable>
@@ -167,19 +188,35 @@ function transformarData(dataString: string | number | Date) {
         v-model="orders_rejected" 
         :itemKey="(item: any) => item"
         :group="{ name: 'orders', pull: false }"
-        id="reject" 
+        id="rejected" 
         :animation="300"
         @add="dragAdd">
         <template #item="{ element: order }">
-          <div :id="order.id" class="card-drag rejected-card">
+          <div :id="order.id" class="card-drag rejected-card" @dblclick="showOrder(order.id)">
             <h5>Order {{ order.id }}</h5>
-            <p>Buyer: {{ order.buyer_id }}</p>
-            <p>Created: {{ transformarData(order.created_at) }}</p>
-            <p>State: {{ order.state }}</p>           
+            <div v-for="order_item in order.order_items">
+              <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.price }}</p>
+            </div>
+            <p>Pedido Rejeitado</p>           
           </div>
         </template>
       </draggable>
     </div>
+
+    <div v-if="show_order" class="modal">  
+    <div class="modal-content">
+      <span class="close-btn" @click="show_order = false">&times;</span>    
+      <h4>Pedido: {{selected_order.id}}</h4>
+      <p>Comprador: {{ selected_order.buyer_id }}</p>
+      <div v-for="order_item in selected_order.order_items">
+        <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.price }}</p>        
+      </div>
+      <p>Criado em: {{ transformarData(selected_order.created_at) }}</p>
+      <p>Atualizado em: {{ transformarData(selected_order.updated_at) }}</p>
+      <p>Estado: {{ selected_order.state }}</p>
+    </div>
+  </div>
+
 
   </div>
 </template>
@@ -197,15 +234,18 @@ function transformarData(dataString: string | number | Date) {
 
   .orders-card{
     display: flex;
-    justify-content: space-between;
+  }
+
+  .card-col{
+    flex: 1;
+    width: auto;
   }
 
   .card-drag {
 		border: 1px solid transparent;
 		border-radius: 5px;
-    margin: 10px 0px;
+    margin: 10px 3px;
     padding: 10px;
-
   }
 
   .card-drag:hover {
@@ -288,6 +328,19 @@ function transformarData(dataString: string | number | Date) {
   .btn-back-store:hover {
     color: white;
     background-color: #ed911f;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    color: #888;
+  }
+
+  .close-btn:hover {
+    color: #000;
   }
 
 </style>

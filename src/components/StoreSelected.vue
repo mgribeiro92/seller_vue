@@ -6,10 +6,12 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router';
 import { Auth } from '@/auth'
 import { stores } from '@/stores'
+import  { products }  from '@/products'
 import event from '@/event'
 import StoreUpdate from './StoreUpdate.vue'
 
-const products = ref()
+const products_data = ref({ id: 0, title: '', price: '', image_product_url: ''})
+const store_data = ref()
 const store = ref({ id: 0, name: '', created_at: '', updated_at: '', image_url: '', products: [], update_at: '', url: '' });
 const msg = ref('')
 const alert = ref('')
@@ -24,26 +26,14 @@ const route = useRoute()
 const store_id = route.params.storeId
 const localhost = import.meta.env.VITE_BASE_URL
 
-const loadData = async () => {
+onMounted(async () => {
   auth.verifyToken()
   try {
     await auth.validToken()
   } finally {
-    const store_data = await stores.getStoreAndProducts(store_id)
-    console.log(store_data)
-    store.value = store_data
-    console.log(store_data.products)
-    if(store_data.products.length != 0) {
-      products.value = store_data.products
-    }
-    event.on("products_url", (dados: any) => {
-    msg.value = dados.msg
-    alert.value = dados.alert
-  })
+    store.value = await stores.getStore(store_id) 
   }
-}
-
-onMounted(loadData);
+})
 
 async function editingStore() {
   const data_edit =  await stores.editStore(name_store_edit.value || '', store_id)
@@ -70,10 +60,7 @@ async function deletingStore() {
     router.push('/stores')  
   }
 }
-
-
 </script>
-
 
 <template>
 
@@ -93,7 +80,7 @@ async function deletingStore() {
         <button class='btn-edit-destroy' @click="show_modal = true">Delete</button>
       </div>      
     </div> 
-    <StoreProducts v-if="!update_store" :store_id="store_id" :products="products"/>
+    <StoreProducts v-if="!update_store" :store_id="store_id"/>
     <StoreUpdate v-show="update_store" :store_id="store_id"/>
   </div>
   
