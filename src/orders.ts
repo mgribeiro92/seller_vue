@@ -1,8 +1,8 @@
 import { Auth } from './auth'
-const auth = new Auth()
-const currentUser = auth.currentUser()
 
 async function getOrders(store_id: any) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
   const response = await fetch(
     import.meta.env.VITE_BASE_URL + '/orders_seller/' + store_id, {
     method: 'GET',
@@ -16,6 +16,9 @@ async function getOrders(store_id: any) {
 }
 
 async function changeState(state: string, order_id: number) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
+
   const body = {
     order: {
       id: order_id,
@@ -32,8 +35,7 @@ async function changeState(state: string, order_id: number) {
     },
     body: JSON.stringify(body)     
   })
-  const resposta = await response.json()
-  console.log(resposta)
+  return response
 }
 
 export const orders = {

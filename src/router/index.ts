@@ -4,6 +4,7 @@ import SignInView from '../views/SignInView.vue'
 import StoresView from '../views/StoresView.vue'
 import StoreSelectedView from '../views/StoreSelectedView.vue'
 import OrdersView from '../views/OrdersView.vue'
+import ProductsView from '../views/ProductsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,17 +19,17 @@ const router = createRouter({
       name: 'sign_in',
       component: SignInView,
       meta: { showNavBar: false }
-    },
-    {
-      path: '/stores',
-      name: 'stores',
-      component: StoresView,     
-    },
+    },    
     {
       path: '/stores/:storeId',
       name: 'store',      
       component: StoreSelectedView,        
-    },  
+    },
+    {
+      path: '/products/:storeId',
+      name: 'products',      
+      component: ProductsView,        
+    }, 
     {
       path: '/orders/:storeId',
       name: 'orders',      

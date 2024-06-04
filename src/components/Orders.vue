@@ -31,30 +31,34 @@ onMounted(async () => {
   try {
     await auth.validToken()    
   } finally {
-    store.value = await stores.getStore(store_id)
-    orders_data.value = await orders.getOrders(store_id)
-    // console.log(orders_data.value)
-    orders_created.value = orders_data.value.filter((item: { state: string; }) => item.state === 'created')
-    orders_accepted.value = orders_data.value.filter((item: { state: string; }) => item.state === 'accepted')
-    orders_delivery.value = orders_data.value.filter((item: { state: string; }) => item.state === 'delivery')
-    orders_finished.value = orders_data.value.filter((item: { state: string; }) => item.state === 'finished')
-    orders_rejected.value = orders_data.value.filter((item: { state: string; }) => item.state === 'rejected')
+    getOrders()
   }
 })
 
+async function getOrders() {
+  store.value = await stores.getStore(store_id)
+  orders_data.value = await orders.getOrders(store_id)
+  // console.log(orders_data.value)
+  orders_created.value = orders_data.value.filter((item: { state: string; }) => item.state === 'created')
+  orders_accepted.value = orders_data.value.filter((item: { state: string; }) => item.state === 'accepted')
+  orders_delivery.value = orders_data.value.filter((item: { state: string; }) => item.state === 'delivery')
+  orders_finished.value = orders_data.value.filter((item: { state: string; }) => item.state === 'finished')
+  orders_rejected.value = orders_data.value.filter((item: { state: string; }) => item.state === 'rejected')
+}
 
 async function dragAdd(event: any) { 
   const state = event.to.id
   const order_id = event.item.id
   console.log(state)
-  try {
-    await orders.changeState(state, order_id)
-  } finally {
-    window.location.reload()
+  const response_orders = await orders.changeState(state, order_id)
+  if (response_orders.status == 422) {
+    msg.value = 'Pedido de numero ' + order_id + ' não pode ser movido para ' + state + '!'
+    alert.value = "error"
+  } else {
+    msg.value = 'Pedido de numero ' + order_id + ' foi ser movido para ' + state + '!'
+    alert.value = "success"
   }
-  msg.value = "TESTE"
-  console.log(state)
-  console.log(order_id)
+  getOrders()
 }
 
 type DateTimeFormatOptions = any
@@ -73,17 +77,11 @@ function showOrder(order_id: any) {
 </script>
 
 <template>
-
-  <Message v-if="msg" :message="msg" :alert="alert"/>
-  <div class="container">   
+  
+  <div class="orders">   
+    <Message v-if="msg" :message="msg" :alert="alert"/>
     <div class="store-row">
-      <div class="store-name">
-        <img v-if="store.image_url" :src="localhost + store.image_url">
-        <h3>{{ store.name }} - Orders</h3>        
-      </div>
-      <div class="store-edit-destroy">
-        <RouterLink class="btn-back-store" :to="{ name: 'store', params: { storeId: store.id }}">Back to Store</RouterLink>
-      </div>      
+      <div class="store-name">{{ store.name }} - Orders</div>         
     </div>
     <hr>
   </div>  
@@ -230,6 +228,10 @@ function showOrder(order_id: any) {
 
   p {
     margin: 0;
+  }
+
+  .orders {
+    padding: 10px;
   }
 
   .orders-card{

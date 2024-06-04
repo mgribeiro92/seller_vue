@@ -2,9 +2,9 @@
 
 import { ref, onMounted } from 'vue'
 import { products } from '@/products'
+import { useRouter, useRoute } from 'vue-router';
 
-const {store_id} = defineProps(['store_id'])
-
+const route = useRoute()
 const update_product = ref(null)
 const new_product = ref(false)
 const products_data = ref()
@@ -17,9 +17,16 @@ const new_product_price = defineModel<number>('new_price_product')
 const msg = ref('')
 const alert = ref('')
 const localhost = import.meta.env.VITE_BASE_URL
+const store_id = route.params.storeId
+
+const total_pages = ref()
+const current_page = ref(1)
 
 onMounted(async () => {
-  products_data.value = await products.getProducts(store_id)
+  const response = await products.getProducts(store_id, current_page.value)
+  products_data.value = response.result.products
+  total_pages.value = response.result.pagination.pages
+  // store.value = await stores.getStore(store_id)
   console.log(products_data.value) 
 
 })
@@ -66,24 +73,40 @@ function deletingProduct(product_id: number) {
   products.deleteProduct(product_id)
 }
 
+async function nextPage() {
+  if (current_page.value < total_pages.value) {
+    current_page.value++
+    const response = await products.getProducts(store_id, current_page.value)
+    products_data.value = response.result.products
+  }
+}
+
+async function prevPage() {
+  if (current_page.value > 1) {
+    current_page.value--
+    const response = await products.getProducts(store_id, current_page.value)
+    products_data.value = response.result.products
+  }
+}
+
 </script>
 
 
 <template>
-  <hr>   
+
   <!-- <div v-if="!products">
     <div class="row">
       <p class="col">Não existe produtos para essa loja!</p>
       <button class="col-4 btn-new-product" @click="new_product = true">New product</button>
     </div>    
   </div> -->
-
-  <div class="tabela">
-    <div class="row">
-      <h4 class="col">Products</h4>
-      <button class="col-4 btn-new-product" @click="new_product = true">New product</button>
-    </div>      
-    <table v-show="new_product == false">      
+  <div class="products">
+    <div class="product-row">
+      <div class="store-name">Produtos</div>
+      <button class="btn-new-product" @click="new_product = true">New product</button>
+    </div>  
+    <div  v-show="new_product == false" class="tabela">       
+      <table>      
         <thead>
           <tr>
             <th style="width: 120px"></th>
@@ -125,42 +148,71 @@ function deletingProduct(product_id: number) {
             </td>              
           </tr>            
         </tbody>
-    </table>   
-  </div> 
+      </table> 
+      <div class="pagination" v-show="total_pages > 1">
+        <button @click="prevPage" :disabled="current_page == 1">Anterior</button>
+        <span>{{ current_page }}</span>
+        <button @click="nextPage" :disabled="current_page == total_pages">Próxima</button>
+      </div>  
+    </div>
+    
+    
 
-  <div class="container" v-show="new_product == true">
-    <form class="form-new-product" @submit.prevent="newProduct()">
-      <div class="form-outline mb-2">                  
-        <label>Title</label>
-        <input type="text" class="form-control" v-model="new_product_title">
-      </div>
-      <div class="form-outline mb-4">                  
-        <label>Price</label>
-        <input type="number" step="0.01" class="form-control" v-model="new_product_price">
-      </div>
-      <input type="submit" class="btn-new-product" value="Create product"></input>
-      
-    </form>
-  </div>  
-
+    <div class="container" v-show="new_product == true">
+      <form class="form-new-product" @submit.prevent="newProduct()">
+        <div class="form-outline mb-2">                  
+          <label>Title</label>
+          <input type="text" class="form-control" v-model="new_product_title">
+        </div>
+        <div class="form-outline mb-4">                  
+          <label>Price</label>
+          <input type="number" step="0.01" class="form-control" v-model="new_product_price">
+        </div>
+        <input type="submit" class="btn-new-product" value="Create product"></input>
+        
+      </form>
+    </div>  
+  </div>
 </template>
 
 <style scoped>
+
+  img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+    }
+
+  .products {
+    padding: 10px;
+  }
+
+  .product-row {
+    display: flex;
+    align-items: center;
+    gap: 200px;
+  }
+
 
   .form-new-product {
     width: 300px;
   }
   
-  .btn-new-product {    
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .btn-new-product {
 		padding: 0px 10px;
-		margin: 0px 0px;  
 		color: #a32020;
 		background-color: white;
 		border-radius: 4px;
 		cursor: pointer;
 		height: 30px;
     width: 150px;
-		border: 1px solid #a32020;
+
 	}
 
   .btn-new-product:hover {

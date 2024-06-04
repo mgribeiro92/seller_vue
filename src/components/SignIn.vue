@@ -53,8 +53,8 @@ function onSubmit() {
 </script>
 
 <template>
-<header>
-	<div>
+
+	<div class="header">
 		<div style="width: 400px">
 			<Message v-show="msg" :message="msg" :alert="alert"/>
 		</div>
@@ -81,12 +81,12 @@ function onSubmit() {
 			<p>If you don't have an account: </p>	
 		</div>
 	</div>
-</header>
+
 </template>
 
 <style scoped> 
 
-	header {
+	.header {
 		display: flex;
 		align-items: center;
 		justify-content: right;

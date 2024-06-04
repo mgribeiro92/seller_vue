@@ -1,11 +1,11 @@
 import { Auth } from './auth'
 
-const auth = new Auth()
-const currentUser = auth.currentUser()
-
-async function getProducts(store_id: any) {
+async function getProducts(store_id: any, page: any) {
+  const url = import.meta.env.VITE_BASE_URL + '/products/store/' + store_id + '/?page=' + page
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
   const response = await fetch(
-    import.meta.env.VITE_BASE_URL + '/products/store/' + store_id, {
+    url, {
       method: 'GET',
       headers: {
         "Accept": "application/json",
@@ -18,6 +18,8 @@ async function getProducts(store_id: any) {
 }
 
 async function createProduct(product_title: string, product_price: any, store_id: any) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
   const body = {
     product: {
       title: product_title,
@@ -83,6 +85,8 @@ async function deleteProduct(product_id: any) {
 }
 
 async function uploadImageProduct(image: File, product_id: number) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser()
   const formData = new FormData()
   formData.append('product[image_product]', image);
   const response = await fetch(

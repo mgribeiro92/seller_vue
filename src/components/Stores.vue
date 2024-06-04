@@ -8,7 +8,7 @@ import { stores } from '@/stores'
 import event from '@/event';
 import Message from './Message.vue';
 
-// const router = useRouter()
+const router = useRouter()
 const auth =  new Auth()
 
 const name_store = defineModel<string>('name_store')
@@ -24,7 +24,8 @@ onMounted(async () => {
   try {
     await auth.validToken()    
   } finally {
-    stores_data.value = await stores.getStores()
+    const stores_response = await stores.getStores()
+    stores_data.value = stores_response.stores
   }  
   event.on("stores_url", (dados: any) => {
     msg.value = dados.msg
@@ -38,30 +39,30 @@ async function createStore() {
   show_modal.value = false
 }
 
+function storeSelected(store: any) {
+  localStorage.setItem("store", store)
+  const url = router.resolve({ name: 'store', params: { storeId: store } }).href
+  window.location.href = url
+}
+
 </script>
 
 <template>
 
-  <div class="message">
-    <Message v-if="msg" :message="msg" :alert="alert"/>
-  </div>  
   <div class="container">
-    <h3>Stores</h3>
-    <hr>
     <div class="stores">
       <div class="card-store" v-for = "store in stores_data" :key = "store.id">
         <div class="card-store-front">
           <h5 class="card-title">{{ store.name }}</h5>
         </div>
-        <div class="card-store-back">
+        <div @click="storeSelected(store.id)"  class="card-store-back">
           <h5 class="card-title">{{ store.name }}</h5>
-          <RouterLink :to="{ name: 'store', params: { storeId: store.id }}">Show store and products</RouterLink>
+          <p>Escolher loja!</p>
         </div>        
       </div>
       <div class="card-store" style="padding: 15px">
         <img src="../assets/mais.png" alt="">
-        <p></p>
-        <button @click="show_store = true" class="btn-store">Create a new store</button>      
+        <button @click="show_store = true" class="btn-store">Criar nova loja!</button>      
       </div>      
     </div>
   </div>  
@@ -113,8 +114,10 @@ async function createStore() {
 
   .card-store {
     margin: 10px;
-    width: 16rem;
-    height: 8rem;
+    width: 250px;
+    height: 100px;
+    display: flex;
+    align-items: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     position: relative;
     perspective: 800px;
@@ -134,13 +137,10 @@ async function createStore() {
 
   .card-store-front {
     background-color: white;
-    color: #a32020;
-    border-left: 2px solid #a32020;
     padding: 10px;
   }
 
-  .card-store-back {
-    background-color: #a32020;
+  .card-store-back { 
     color: white;
     transform: rotateY(-180deg);
     display: flex;
@@ -158,8 +158,9 @@ async function createStore() {
   }
 
   img {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
   }
 
   .message {

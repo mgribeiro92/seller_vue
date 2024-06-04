@@ -1,67 +1,87 @@
 <script setup lang="ts">
 
-import router from '@/router';
+import { ref, onMounted, onUpdated } from 'vue'
 import { Auth } from '../auth'
-import { ref, onMounted } from 'vue'
+import { stores } from '../stores'
 
 const auth = new Auth()
 const currentUser = ref(auth.currentUser())
 
-const logOut = function() {
-  console.log('logout chamado')
-  auth.signOut()
-  router.push('/sign_in')
+const colors = ['Vermelho', 'Verde', 'Azul', 'Roxo', 'Laranja']
+const selectedColor = ref(colors[0])
+const store_name = ref()
+
+onMounted(async() => {
+  const store_id = localStorage.getItem('store')
+  const store_data = await stores.getStore(store_id)
+  store_name.value = store_data.name
+  console.log(store_name.value)
+})
+
+onUpdated(async() => {
+  console.log('update da navbar')
+})
+
+const emit = defineEmits(['changeColor']);
+const handleChangeColor = () => {
+  console.log('ta chamando a mudança de cor')
+  emit('changeColor', selectedColor.value);
 }
+
 </script>
 
 <template> 
-<nav class="navbar navbar-expand">
-  <div class="container-fluid">
-    <a class="navbar-brand">Delivery</a>    
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">          
-          <RouterLink class="nav-link" to="/">Home</RouterLink>
-        </li>
-        <li class="nav-item">          
-          <RouterLink class="nav-link" to="/stores">Stores</RouterLink>
-        </li>                  
-      </ul>        
-      <ul class="d-flex navbar-nav">
-        <li class="nav-item">
-          <RouterLink to="" class="nav-link">Hi, {{ currentUser && currentUser.email }}!</RouterLink>
-        </li>				        
-        <li class="nav-item">
-          <button @click="logOut()" class="nav-link">Log out</button>
-        </li>
-      </ul>
+  <nav>
+    <h4 v-if="!store_name">Escolha uma loja para prosseguir</h4>
+    <h4 v-else>Loja: {{ store_name }}</h4>
+    <div class="change-color">
+      <label>Mudar de tema:</label>
+      <select class="form-control" v-model="selectedColor">
+        <option v-for="color in colors" :key="color" :value="color">
+          {{ color }}
+        </option>
+      </select>
+      <button class="btn-change-color" @click="handleChangeColor">Mudar</button>
     </div>
-  </div>
-</nav>
+    
+    <div class="user"><RouterLink to="" class="nav-link">Hi, {{ currentUser && currentUser.email }}!</RouterLink></div>
+  </nav>
 </template>
+
+
 
 <style scoped>
 
   nav {      
-    background:	white;
     width: 100%;
-    border-bottom: 2px solid #e11b16;
-  }
-
-  .nav-link {
-    color: 	#e11b16;
-    border-radius: 50px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
 
-  .nav-link:hover {
-    background-color: #e11b16;
-    border-radius: 50px;
-    color: white;
+  .change-color {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
-  .navbar-brand {
-    color:	#e11b16;
+  .form-control {
+    width: 150px;
   }
-  
+
+  .btn-change-color {
+		padding: 0px 10px;
+		background-color: #f2f2f2;
+		border-radius: 4px;
+		cursor: pointer;
+		height: 30px;
+    width: 100px;
+	}
+
+  .btn-change-color:hover {
+    color: #f2f2f2;
+  }
+
 </style>

@@ -75,12 +75,11 @@ async function deletingStore() {
         <img v-show="update_store" class="btn-confirmation" @click="editingStore()" src="../assets/verificar.png" alt="">
       </div>
       <div class="store-edit-destroy">
-        <RouterLink class="btn-edit-destroy" :to="{ name: 'orders', params: { storeId: store.id }}">Orders</RouterLink>
         <button class='btn-edit-destroy' @click="update_store = true ">Update</button>
         <button class='btn-edit-destroy' @click="show_modal = true">Delete</button>
       </div>      
     </div> 
-    <StoreProducts v-if="!update_store" :store_id="store_id"/>
+    <!-- <StoreProducts v-if="!update_store" :store_id="store_id"/> -->
     <StoreUpdate v-show="update_store" :store_id="store_id"/>
   </div>
   
@@ -98,7 +97,7 @@ async function deletingStore() {
 
 </template>
 
-<style>
+<style scoped>
 
   a {
     text-decoration: none;
