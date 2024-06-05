@@ -17,12 +17,14 @@ async function getStores() {
   return await response.json()
 }
 
-async function newStore(name_store: string) {
+async function newStore(name_store: string, description: Text, category: string) {
   const auth = new Auth()
   const currentUser = auth.currentUser()
   const body = {
     store: {
       name: name_store,
+      description: description,
+      category: category
     }
   } 
   const response = await fetch (
@@ -35,16 +37,7 @@ async function newStore(name_store: string) {
       },
       body: JSON.stringify(body)          
     })
-  const data_store = await response.json()
-  if(data_store) {
-    setTimeout(() => {
-      event.emit("stores_url", {
-        msg: 'Store created successfully!',					
-        alert: 'success' 
-        })
-      }, 1000)
-    router.push('/stores')
-  }   
+  return await response.json() 
 }
 
 async function editStore(name_store: string, store_id: any) {
@@ -121,20 +114,32 @@ async function uploadImageStore(imagem: File, store_id: number) {
   }
 };
 
-async function getAddress(cep: any) {
-  fetch('https://viacep.com.br/ws/01001000/json/')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok ' + response.statusText);
+async function newAddress(store_id: any, street: any, number: any, cep: any, city: any, state: any) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser() 
+  const body = {
+    address: {
+      store_id: store_id,
+      street: street,
+      number: number,
+      zip_code: cep,
+      city: city,
+      state: state,
+      country: "Brazil"
     }
-    return response.json(); // Tenta analisar a resposta como JSON
-  })
-  .then(data => {
-    console.log(data); // Processa os dados JSON
-  })
-  .catch(error => {
-    console.error('There has been a problem with your fetch operation:', error);
-  });
+  }
+  const response = await fetch(
+    import.meta.env.VITE_BASE_URL + '/addresses', {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer" + ' ' + currentUser?.token
+      },
+      body: JSON.stringify(body)          
+    } 
+  )
+  return await response.json()
 }
 
 
@@ -145,5 +150,5 @@ export const stores = {
   editStore,
   deleteStore,
   uploadImageStore,
-  getAddress
+  newAddress
 }

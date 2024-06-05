@@ -32,9 +32,6 @@ onMounted(() => {
   
   <div class="home">
     <Message v-if="msg" :message="msg" :alert="alert"/>
-    <h3>Bem vindo lojista!</h3>
-    <hr>
-    <p>Por favor escolha uma loja pra continuar...</p>
     <Stores />
   </div>
 

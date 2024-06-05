@@ -7,6 +7,7 @@ import { stores } from '@/stores'
 
 import event from '@/event';
 import Message from './Message.vue';
+import NewStore from './NewStore.vue'
 
 const router = useRouter()
 const auth =  new Auth()
@@ -34,11 +35,6 @@ onMounted(async () => {
   })
 })
 
-async function createStore() {
-  stores.newStore(name_store.value || '')
-  show_modal.value = false
-}
-
 function storeSelected(store: any) {
   localStorage.setItem("store", store)
   const url = router.resolve({ name: 'store', params: { storeId: store } }).href
@@ -49,7 +45,10 @@ function storeSelected(store: any) {
 
 <template>
 
-  <div class="container">
+  <div v-if="!show_store" class="container">
+    <h3>Bem vindo lojista!</h3>
+    <hr>
+    <p>Por favor escolha uma loja pra continuar...</p>
     <div class="stores">
       <div class="card-store" v-for = "store in stores_data" :key = "store.id">
         <div class="card-store-front">
@@ -67,29 +66,7 @@ function storeSelected(store: any) {
     </div>
   </div>  
   
-  <div v-if="show_store" class="container">  
-    <hr>
-    <h3>Create a new store!</h3>
-    <div style="width: 400px">
-      <div class="form-outline mb-2">                  
-        <label>Name</label>
-        <input type="text" class="form-control" v-model="name_store">
-        <span v-show="!name_store" class="error-message">Por favor, insira um nome.</span>
-      </div>
-      <button v-show="name_store" @click="show_modal = true" class="btn-login">Create Store</button>         
-    </div>
-  </div>
-
-  <div v-if="show_modal" class="modal">
-    <div class="modal-content">
-      <h5>Confirma o nome da loja?</h5>
-      <p style="margin-top:10px">O nome da sua loja é... <span style="font-weight: bold">{{ name_store }}</span></p> 
-      <div class="btn-confirmation-row">
-        <img class="btn-confirmation" @click="show_modal = false" src="../assets/botao-x.png" alt="">
-        <img class="btn-confirmation" @click="createStore()" src="../assets/verificar.png" alt="">
-      </div>      
-    </div>
-  </div>
+  <NewStore v-else />
 
 </template>
 
