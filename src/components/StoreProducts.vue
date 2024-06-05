@@ -105,7 +105,7 @@ async function prevPage() {
       <div class="store-name">Produtos</div>
       <button class="btn-new-product" @click="new_product = true">New product</button>
     </div>  
-    <div  v-show="new_product == false" class="tabela">       
+    <div v-show="new_product == false" class="tabela">       
       <table>      
         <thead>
           <tr>

@@ -121,11 +121,29 @@ async function uploadImageStore(imagem: File, store_id: number) {
   }
 };
 
+async function getAddress(cep: any) {
+  fetch('https://viacep.com.br/ws/01001000/json/')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+    return response.json(); // Tenta analisar a resposta como JSON
+  })
+  .then(data => {
+    console.log(data); // Processa os dados JSON
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+  });
+}
+
+
 export const stores = {
   getStore,
   getStores,
   newStore,
   editStore,
   deleteStore,
-  uploadImageStore
+  uploadImageStore,
+  getAddress
 }

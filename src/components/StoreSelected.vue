@@ -71,8 +71,10 @@ async function deletingStore() {
         <img v-if="store.image_url" :src="localhost + store.image_url">
         <h3 v-show="!update_store">{{ store.name }}</h3>
         <input v-show="update_store" class="form-control" style="width:300px" :placeholder="store.name" v-model="name_store_edit"></input>
-        <img v-show="update_store" class="btn-confirmation" @click="update_store = false" src="../assets/botao-x.png" alt="">
-        <img v-show="update_store" class="btn-confirmation" @click="editingStore()" src="../assets/verificar.png" alt="">
+        <div class="btn-confirmation-row">
+          <img v-show="update_store" @click="update_store = false" src="../assets/botao-x.png" alt="">
+          <img v-show="update_store" @click="editingStore()" src="../assets/verificar.png" alt="">
+        </div>
       </div>
       <div class="store-edit-destroy">
         <button class='btn-edit-destroy' @click="update_store = true ">Update</button>
@@ -88,8 +90,8 @@ async function deletingStore() {
     <div class="modal-content">
       <h5>Are you sure want to delete this store?</h5>      
       <div class="btn-confirmation-row">
-        <img class="btn-confirmation" @click="show_modal = false" src="../assets/botao-x.png" alt="">
-        <img class="btn-confirmation" @click="deletingStore()" src="../assets/verificar.png" alt="">
+        <img @click="show_modal = false" src="../assets/botao-x.png" alt="">
+        <img @click="deletingStore()" src="../assets/verificar.png" alt="">
       </div>      
     </div>
   </div> 
@@ -106,10 +108,27 @@ async function deletingStore() {
     align-items: center;
   }
 
-  img {
+  .store-name > img {
     width: 80px;
     height: 80px;
     border-radius: 50%;
+  }
+
+  .btn-confirmation {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+  }
+
+  .btn-confirmation-row > img {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+  }
+
+  .btn-confirmation-row {
+    display: flex;
+    justify-content: space-around;
   }
 
   .store-row {

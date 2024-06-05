@@ -7,11 +7,6 @@ const {store_id} = defineProps(['store_id'])
 
 const fileInput = ref()
 const cep = ref()
-const address_street = ref()
-const address_number = ref()
-const address_city = ref()
-const address_state = ref()
-const show_address = ref(false)
 
 let imagemSelecionada: File
 
@@ -29,28 +24,6 @@ function uploadImage() {
 }
 
 
-async function fetchAddress() {
-  if (cep.value.length == 8) {
-    console.log('CEP completo:', cep.value)
-    const response = await fetch(
-      "https://viacep.com.br/ws/" + cep.value + "/json/", {
-        method: "GET"
-      }
-    )
-    const address = await response.json()
-    show_address.value = true
-    if (response.ok) {
-      address_street.value = address.logradouro
-      address_city.value = address.localidade
-      address_state.value = address.uf
-    }   
-  }
-}
-
-async function updateAddress(){
-  console.log(address_number.value)
-  console.log(store_id)
-}
 
 </script>
 
@@ -67,7 +40,6 @@ async function updateAddress(){
         <input type="file" ref="fileInput" class="form-control-file" @change="handleFileInputChange">
         <button class="btn-img" @click="uploadImage">Send Logo</button>
       </div>
-
       <div class="store-address">
         <div class="form-outline mb-2">
           <h5>Endereço</h5>                 
@@ -75,27 +47,6 @@ async function updateAddress(){
           <input style="width: 150px" class="form-control" maxlength="8" v-model="cep" @input="fetchAddress" @keyup.enter="fetchAddress">
           <small class="form-text text-muted">Por favor coloque seu cep para continuar.</small>
         </div>
-        <div class="address-number">
-          <div class="form-outline mb-2 logradouro">
-            <label>Logradouro</label>
-            <input class="form-control" type="text" :placeholder="address_street" readonly>
-          </div>
-          <div class="form-outline mb-2 number">
-            <label>Número</label>
-            <input class="form-control" type="text" v-model="address_number">
-          </div>          
-        </div>
-        <div class="address-number">
-          <div class="form-outline mb-2 logradouro">
-            <label>Cidade</label>
-            <input class="form-control" type="text" :placeholder="address_city" readonly>
-          </div>
-          <div class="form-outline mb-2 number">
-            <label>Estado</label>
-            <input class="form-control" type="text" :placeholder="address_state" readonly>
-          </div>          
-        </div>        
-        <button class="btn btn-primary" @click="updateAddress">Enviar</button>
       </div>
     </div>
   </div>
@@ -107,6 +58,7 @@ async function updateAddress(){
   .update-store {
     display: flex;
     gap: 50px;
+    border: 2px solid green
   }
 
   .store-address {
@@ -115,19 +67,6 @@ async function updateAddress(){
 
   .store-info {
     flex: 1
-  }
-
-  .address-number {
-    display: flex;
-    gap: 10px;
-  }
-
-  .logradouro {
-    flex: 8;
-  }
-
-  .number {
-    flex: 2;
   }
 
   .btn-img {    
