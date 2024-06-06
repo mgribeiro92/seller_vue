@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^3.2.1",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@rails/actioncable": "^7.0.8-3",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",

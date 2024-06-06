@@ -8,6 +8,7 @@ import { stores } from '@/stores'
 import draggable from 'vuedraggable';
 import { products } from "@/products";
 import Message from "./Message.vue";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 const auth = new Auth()
 const store = ref({ id: 0, name: '', created_at: '', updated_at: '', image_url: '', products: [], update_at: '', url: '' });
@@ -74,6 +75,34 @@ function showOrder(order_id: any) {
   show_order.value = !show_order.value
 }
 
+const currentUser = auth.currentUser() 
+fetchEventSource (
+  import.meta.env.VITE_BASE_URL + '/stores/' + store_id + '/orders/new',{
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+      "X-API-KEY": import.meta.env.X_API_KEY,
+      "Authorization": "Bearer" + ' ' + currentUser?.token
+    },
+    async onopen(response) {
+      if (response.ok) {
+        console.log('connected!')
+        return
+      }
+    },
+    onmessage(msg) {
+      if (msg.event === "new-order") {
+        let data = JSON.parse(msg.data)
+        console.log(data.order)
+      }
+    },
+  }
+)
+
+
+function fetchEventSourcer(arg0: string, arg1: { method: string; headers: { Accept: string; "X-API-KEY": any; Authorization: string; }; }) {
+  throw new Error("Function not implemented.");
+}
 </script>
 
 <template>

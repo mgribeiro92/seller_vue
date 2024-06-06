@@ -1,33 +1,80 @@
 <script setup lang="ts">
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { stores } from '@/stores'
+import Message from './Message.vue';
 
-const {store_id} = defineProps(['store_id'])
+const {store, address} = defineProps(['store', 'address'])
+console.log(store)
+console.log(address)
 
 const fileInput = ref()
+const store_id = ref()
+const name_store = ref()
+const description_store = ref()
+const category_store = ref()
 const cep = ref()
 const address_street = ref()
 const address_number = ref()
 const address_city = ref()
 const address_state = ref()
+const address_id = ref()
 const show_address = ref(false)
+const msg = ref()
+const alert = ref()
+const localhost = import.meta.env.VITE_BASE_URL
+
+onMounted(() => {
+  store_id.value = store.id
+  name_store.value = store.name
+  description_store.value = store.description
+  category_store.value = store.category
+  cep.value = address.zip_code
+  address_city.value = address.city
+  address_street.value = address.street
+  address_number.value = address.number
+  address_state.value = address.state
+  address_id.value = address.id
+})
 
 let imagemSelecionada: File
-
 function handleFileInputChange() {
   const files = fileInput.value.files
   console.log(files)
   if (files.length > 0) {
-    imagemSelecionada = files[0];
+    imagemSelecionada = files[0];    
   }
-  // console.log(imagemSelecionada)
 }
 
-function uploadImage() {
-  stores.uploadImageStore(imagemSelecionada, store_id)
+const emit = defineEmits(['showStore']);
+async function updateStore(){
+  const response_store = await stores.editStore(store_id.value, name_store.value, description_store.value, category_store.value)
+  const response_address = await stores.updateAddress(address_id.value, address_street.value, address_number.value, cep.value, address_city.value, address_state)
+  if (imagemSelecionada) {
+    stores.uploadImageStore(imagemSelecionada, store.id)
+  }
+  emit('showStore');
 }
 
+// async function createStore() {
+//   console.log('criando a loja')
+//   if (!name_store.value || !description_store.value || !category_store.value || !cep.value || !address_number.value ) {
+//     msg.value = "Por favor preencher todos os itens!"
+//     alert.value = "error"
+//   }
+//   const response_store = await stores.newStore(name_store.value, description_store.value, category_store.value)
+//   const store_id = response_store.id
+//   const response_address = await stores.newAddress(store_id, address_street.value, address_number.value, cep.value, address_city.value, address_state)
+//   console.log(response_address)
+//   if (imagemSelecionada) {
+//     stores.uploadImageStore(imagemSelecionada, store_id)
+//   }
+// }
+
+
+// function uploadImage() {
+//   stores.uploadImageStore(imagemSelecionada, store_id)
+// }
 
 async function fetchAddress() {
   if (cep.value.length == 8) {
@@ -47,27 +94,39 @@ async function fetchAddress() {
   }
 }
 
-async function updateAddress(){
-  console.log(address_number.value)
-  console.log(store_id)
-}
 
 </script>
 
 <template>
-
-  <div class="container">
-    <hr>
-    <div class="update-store">      
+  <div class="update">
+    <Message v-show="msg" :message="msg" :alert="alert"/>
+    <h3>Editar Loja!</h3>
+    <div class="new-store">
       <div class="store-info">
         <div class="form-outline mb-2">                  
-          <label>Description</label>
-          <textarea class="form-control" rows="3" maxlength="500"></textarea>
+          <label>Name</label>
+          <input type="text" class="form-control" v-model="name_store">
+          <small v-show="!name_store" class="form-text text-muted">Por favor, insira um nome.</small>
         </div>
-        <input type="file" ref="fileInput" class="form-control-file" @change="handleFileInputChange">
-        <button class="btn-img" @click="uploadImage">Send Logo</button>
+        <div class="form-outline mb-2">                  
+          <label>Categoria</label>
+          <select class="form-control" v-model="category_store">
+            <option>Restaurante</option>
+            <option>Doceria</option>
+            <option>Bebidas</option>
+          </select>
+        </div>
+        <div class="form-outline mb-2">                  
+          <label>Descrição</label>
+          <textarea class="form-control" rows="3" maxlength="500" v-model="description_store"></textarea>
+        </div>
+        <img v-if="store.image_url" :src="localhost + store.image_url">
+        <div class="form-outline mb-2">
+          <label>Imagem: </label>
+          <br>
+          <input type="file" ref="fileInput" class="form-control-file" @change="handleFileInputChange">
+        </div>
       </div>
-
       <div class="store-address">
         <div class="form-outline mb-2">
           <h5>Endereço</h5>                 
@@ -94,26 +153,37 @@ async function updateAddress(){
             <label>Estado</label>
             <input class="form-control" type="text" :placeholder="address_state" readonly>
           </div>          
-        </div>        
-        <button class="btn btn-primary" @click="updateAddress">Enviar</button>
-      </div>
+        </div>  
+      </div>   
     </div>
+    <button @click="updateStore" class="btn btn-outline-success mt-4">Editar</button>  
   </div>
+
 
 </template>
 
 <style scoped>
 
-  .update-store {
-    display: flex;
-    gap: 50px;
+  img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
   }
 
-  .store-address {
-    flex: 1
+  .update {
+    margin: 10px
+  }
+
+  .new-store{
+    display: flex;
+    gap: 50px
   }
 
   .store-info {
+    flex: 1
+  }
+
+  .store-address {
     flex: 1
   }
 
@@ -130,21 +200,14 @@ async function updateAddress(){
     flex: 2;
   }
 
-  .btn-img {    
-		padding: 0px 10px;
-		margin: 10px 0px;  
-		color: #a32020;
-		background-color: white;
-		border-radius: 4px;
-		cursor: pointer;
-		height: 30px;
-    width: 150px;
-		border: 1px solid #a32020;
-	}
-
-  .btn-img:hover {
-    color: white;
-    background-color: #a32020;
-  }
-
 </style>
+
+
+
+
+
+
+
+
+
+

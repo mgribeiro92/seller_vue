@@ -78,7 +78,7 @@ function onSubmit() {
 				</div>            
 				<input v-show="!awaiting" type="submit" class="btn-login" value="Login"></input> 				           
 			</form>
-			<p>If you don't have an account: </p>	
+			<p>If you don't have an account: <RouterLink to="/sign_up">Criar conta!</RouterLink></p>
 		</div>
 	</div>
 

@@ -40,12 +40,14 @@ async function newStore(name_store: string, description: Text, category: string)
   return await response.json() 
 }
 
-async function editStore(name_store: string, store_id: any) {
+async function editStore(store_id: any, name_store: string, description: any, category: any) {
   const auth = new Auth()
   const currentUser = auth.currentUser()
   const body = {
     store: {
       name: name_store,
+      description: description,
+      category: category
     }
   }
   const response = await fetch(
@@ -142,6 +144,33 @@ async function newAddress(store_id: any, street: any, number: any, cep: any, cit
   return await response.json()
 }
 
+async function updateAddress(address_id: any, street: any, number: any, cep: any, city: any, state: any) {
+  const auth = new Auth()
+  const currentUser = auth.currentUser() 
+  const body = {
+    address: {
+      street: street,
+      number: number,
+      zip_code: cep,
+      city: city,
+      state: state,
+      country: "Brazil"
+    }
+  }
+  const response = await fetch(
+    import.meta.env.VITE_BASE_URL + '/addresses/' + address_id, {
+      method: 'PUT',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer" + ' ' + currentUser?.token
+      },
+      body: JSON.stringify(body)          
+    } 
+  )
+  return await response.json()
+}
+
 
 export const stores = {
   getStore,
@@ -150,5 +179,6 @@ export const stores = {
   editStore,
   deleteStore,
   uploadImageStore,
-  newAddress
+  newAddress,
+  updateAddress
 }

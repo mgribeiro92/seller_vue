@@ -90,6 +90,53 @@ class Auth {
 		})				
 	}
 
+	async signUp(email: string, password: string, password_confirmation: string) {
+		console.log('chamando sign up do auth')
+		const body = {
+			user: {
+				email: email,
+				password: password,
+				password_confirmation: password_confirmation
+			}
+		}
+		const response = await fetch (
+			import.meta.env.VITE_BASE_URL + '/new', {
+			method: "POST",
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json",
+				"X-API-KEY": "fvXfHcO7vr8qIHuCb5wFsLcd8uE="
+			},
+			body: JSON.stringify(body)
+		})
+		return response.json()
+	}
+
+	async newAddress(user_id: any, street: any, number: any, cep: any, city: any, state: any) {
+		const body = {
+			address: {
+				user_id: user_id,
+				street: street,
+				number: number,
+				zip_code: cep,
+				city: city,
+				state: state,
+				country: "Brazil"
+			}
+		}
+		const response = await fetch(
+			import.meta.env.VITE_BASE_URL + '/addresses', {
+				method: 'POST',
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body)          
+			} 
+		)
+		return await response.json()
+	}
+
 	async newToken() {
 		const body = {
 			refresh_token: this.getFallback('refresh_token')

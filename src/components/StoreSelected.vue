@@ -9,14 +9,17 @@ import { stores } from '@/stores'
 import  { products }  from '@/products'
 import event from '@/event'
 import StoreUpdate from './StoreUpdate.vue'
+import type { Address } from '../types.ts'
+
 
 const products_data = ref({ id: 0, title: '', price: '', image_product_url: ''})
 const store_data = ref()
-const store = ref({ id: 0, name: '', created_at: '', updated_at: '', image_url: '', products: [], update_at: '', url: '' });
+const store = ref({ id: 0, name: '', created_at: '', updated_at: '', image_url: '', products: [], update_at: '', url: '', description: '', category: '', address: [] });
 const msg = ref('')
 const alert = ref('')
 const update_store = ref(false)
 const show_modal = ref(false)
+const address = ref<Address>({} as Address);
 
 const name_store_edit = defineModel<string>('name_store_edit')
 
@@ -31,21 +34,38 @@ onMounted(async () => {
   try {
     await auth.validToken()
   } finally {
-    store.value = await stores.getStore(store_id) 
+    getStore()
   }
 })
 
-async function editingStore() {
-  const data_edit =  await stores.editStore(name_store_edit.value || '', store_id)
-  console.log(data_edit)
-  if(data_edit.id) {
-    update_store.value = false
-    store.value = data_edit.name
-    msg.value = "Store updated successfully!"
-    alert.value = "success"
+async function getStore() {
+  const store_data =  await stores.getStore(store_id)
+  console.log(store_data)
+  store.value = store_data
+  if (store_data.address) {
+    address.value = store_data.address
   }
-  console.log(data_edit.name)
 }
+  
+function showStore() {
+  update_store.value = false
+  console.log('chamando a store')
+  getStore()
+  msg.value = "Loja atualizada com sucesso!"
+  alert.value = "info"
+}
+
+// async function editingStore() {
+//   const data_edit =  await stores.editStore(name_store_edit.value || '', store_id)
+//   console.log(data_edit)
+//   if(data_edit.id) {
+//     update_store.value = false
+//     store.value = data_edit.name
+//     msg.value = "Store updated successfully!"
+//     alert.value = "success"
+//   }
+//   console.log(data_edit.name)
+// }
 
 async function deletingStore() {
   console.log('aqui vai deletar a store')
@@ -62,29 +82,35 @@ async function deletingStore() {
 }
 </script>
 
-<template>
+<template>   
 
-  <Message v-if="msg" :message="msg" :alert="alert"/>  
-  <div class="container">
+  <div v-if="!update_store" class="store">
+    <Message v-if="msg" :message="msg" :alert="alert"/>
     <div class="store-row">
       <div class="store-name">
         <img v-if="store.image_url" :src="localhost + store.image_url">
-        <h3 v-show="!update_store">{{ store.name }}</h3>
-        <input v-show="update_store" class="form-control" style="width:300px" :placeholder="store.name" v-model="name_store_edit"></input>
-        <div class="btn-confirmation-row">
-          <img v-show="update_store" @click="update_store = false" src="../assets/botao-x.png" alt="">
-          <img v-show="update_store" @click="editingStore()" src="../assets/verificar.png" alt="">
-        </div>
+        <h3>{{ store.name }}</h3>  
       </div>
       <div class="store-edit-destroy">
         <button class='btn-edit-destroy' @click="update_store = true ">Update</button>
         <button class='btn-edit-destroy' @click="show_modal = true">Delete</button>
-      </div>      
-    </div> 
-    <!-- <StoreProducts v-if="!update_store" :store_id="store_id"/> -->
-    <StoreUpdate v-show="update_store" :store_id="store_id"/>
+      </div>    
+    </div>
+    <hr> 
+    <div class="store-info">               
+      <div class="store-title">Categoria</div>
+      <p>{{ store.category }}</p>
+      <div class="store-title">Descrição</div>
+      <p>{{ store.description }}</p>
+      <div class="store-title">Endereço</div>
+      <div><span class="address-title">Rua: </span>{{ address.street }}, {{ address.number }}</div>
+      <div><span class="address-title">Cidade: </span>{{ address.city }} - {{ address.state }}</div>
+      <div><span class="address-title">CEP: </span>{{ address.zip_code }}</div>
+      <div><span class="address-title">Pais: </span>{{ address.country }}</div>
+    </div>    
   </div>
-  
+
+  <StoreUpdate v-else="update_store" :store="store" :address="address" @showStore="showStore"/>
 
   <div v-if="show_modal" class="modal">
     <div class="modal-content">
@@ -108,10 +134,28 @@ async function deletingStore() {
     align-items: center;
   }
 
+  .store {
+    display: flex;
+    flex-direction: column;
+  }
+
   .store-name > img {
     width: 80px;
     height: 80px;
     border-radius: 50%;
+  }
+
+  .store-info {
+    margin: 10px;
+  }
+
+  .store-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .address-title {
+    font-weight: bold;
   }
 
   .btn-confirmation {
@@ -133,6 +177,8 @@ async function deletingStore() {
 
   .store-row {
     display: flex;
+    align-items: center;
+    padding: 10px;
   }
 
   .store-name {
