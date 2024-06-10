@@ -27,20 +27,18 @@ const route = useRoute()
 const store_id = route.params.storeId
 const localhost = "http://127.0.0.1:3000/"
 
-onMounted(async () => {
-  auth.verifyToken()
-  try {
-    await auth.validToken()    
-  } finally {
-    getOrders()
-  }
-})
+auth.verifyToken()
+try {
+  auth.validToken()    
+} finally {
+  getOrders()
+}
 
 async function getOrders() {
   store.value = await stores.getStore(store_id)
   orders_data.value = await orders.getOrders(store_id)
   // console.log(orders_data.value)
-  orders_created.value = orders_data.value.filter((item: { state: string; }) => item.state === 'created')
+  orders_created.value = orders_data.value.filter((item: { state: string; }) => item.state === 'payment_success')
   orders_accepted.value = orders_data.value.filter((item: { state: string; }) => item.state === 'accepted')
   orders_delivery.value = orders_data.value.filter((item: { state: string; }) => item.state === 'delivery')
   orders_finished.value = orders_data.value.filter((item: { state: string; }) => item.state === 'finished')
@@ -90,19 +88,24 @@ fetchEventSource (
         return
       }
     },
-    onmessage(msg) {
-      if (msg.event === "new-order") {
-        let data = JSON.parse(msg.data)
-        console.log(data.order)
+    onmessage(message) {
+      if (message.event === "new-order") {
+        let data = JSON.parse(message.data)
+        console.log(data.order.length)
+        if (data.order.length == 0) {
+          msg.value = "Loja não tem novos pedidos!"
+          alert.value = "warning"
+        } else {
+          msg.value = `Loja tem ${data.order.length} pedidos novos!`
+          alert.value = "info"
+          getOrders()
+        }
       }
     },
   }
 )
 
 
-function fetchEventSourcer(arg0: string, arg1: { method: string; headers: { Accept: string; "X-API-KEY": any; Authorization: string; }; }) {
-  throw new Error("Function not implemented.");
-}
 </script>
 
 <template>
@@ -117,7 +120,7 @@ function fetchEventSourcer(arg0: string, arg1: { method: string; headers: { Acce
   <div class="orders-card container">  
     
     <div class="card-col">   
-      <h4 class="created">Created</h4>
+      <h4 class="created">Pago</h4>
       <draggable 
         style="height: 100%" 
         v-model="orders_created" 
@@ -133,14 +136,14 @@ function fetchEventSourcer(arg0: string, arg1: { method: string; headers: { Acce
               <p>{{ order_item.amount }}x {{ order_item.product.title }} - R$ {{ order_item.price }}</p>
             </div>
             <!-- <p>Created: {{ transformarData(order.created_at) }}</p> -->
-            <p>Pedido Criado</p>    
+            <p>Pedido Pago</p>    
           </div>
         </template>
       </draggable>
     </div>
     
     <div class="card-col">   
-      <h4 class='accepted'>Accepted</h4>
+      <h4 class='accepted'>Aceito</h4>
       <draggable 
         style="height: 100%" 
         v-model="orders_accepted" 
@@ -163,7 +166,7 @@ function fetchEventSourcer(arg0: string, arg1: { method: string; headers: { Acce
     </div>
 
     <div class="card-col">   
-      <h4 class="delivery">Delivery</h4>
+      <h4 class="delivery">Entrega</h4>
       <draggable 
         style="height: 100%" 
         v-model="orders_delivery" 
@@ -186,7 +189,7 @@ function fetchEventSourcer(arg0: string, arg1: { method: string; headers: { Acce
     </div>
 
     <div class="card-col">   
-      <h4 class="finished">Finished</h4>
+      <h4 class="finished">Finalizado</h4>
       <draggable 
         style="height: 100%" 
         v-model="orders_finished" 
@@ -209,7 +212,7 @@ function fetchEventSourcer(arg0: string, arg1: { method: string; headers: { Acce
     </div>
 
     <div class="card-col">   
-      <h4 class="rejected">Rejected</h4>
+      <h4 class="rejected">Rejeitado</h4>
       <draggable 
         style="height: 100%" 
         v-model="orders_rejected" 
