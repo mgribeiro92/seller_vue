@@ -64,7 +64,10 @@ function color(selectedColor: any) {
     color: var(--cor-dinamica);
     background-color: #f2f2f2;
   }
-
+  
+  h3 {
+    color: gray
+  }
   
   .store-name { 
     font-size: 25px;
@@ -125,6 +128,23 @@ function color(selectedColor: any) {
     padding: 20px;
     border: 1px solid #888;
     width: 30%;
+  }
+
+  .btn {
+    padding: 0px 10px;
+		margin: 0px 10px;  
+		color: var(--cor-dinamica);
+		background-color: white;
+		border-radius: 4px;
+		cursor: pointer;
+		height: 30px;
+    width: 150px;
+    border: 1px solid var(--cor-dinamica);
+	}
+
+  .btn:hover {
+    color: white;
+    background-color: var(--cor-dinamica);
   }
 
 </style>

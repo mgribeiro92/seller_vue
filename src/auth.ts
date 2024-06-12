@@ -166,7 +166,7 @@ class Auth {
 		}
 	}
 
-	replaceToken (token: string) {
+	replaceToken(token: string) {
 		if (localStorage.getItem('token')) {
 			localStorage.setItem('token', token)
 		} else {
@@ -203,7 +203,35 @@ class Auth {
     }
 	}
 
+	async userProfile() { 
+    const token = this.getFallback('token')    
+    const response = await fetch (
+      'http://127.0.0.1:3000/me', {
+      method: 'GET',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer" + ' ' + token
+      },           
+    })
+    const userData = await response.json()
+    return userData
+  }
+
+	async deleteUser(user_id: any) {
+    const response = await fetch (
+      import.meta.env.VITE_BASE_URL + '/users/' + user_id, {
+      method: 'DELETE',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },      
+    })
+    const delete_user = await response.json()
+    console.log(delete_user)
+  }
+
 
 }
 
-export {Auth}
+export { Auth }

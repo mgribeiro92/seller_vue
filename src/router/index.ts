@@ -6,6 +6,7 @@ import StoresView from '../views/StoresView.vue'
 import StoreSelectedView from '../views/StoreSelectedView.vue'
 import OrdersView from '../views/OrdersView.vue'
 import ProductsView from '../views/ProductsView.vue'
+import UserProfileView from '../views/UserProfileView.vue'
 import Chat from '../components/Chat.vue'
 
 const router = createRouter({
@@ -47,7 +48,12 @@ const router = createRouter({
       path: '/chat',
       name: 'chat',      
       component: Chat,        
-    },  
+    },
+    {
+      path: '/user',
+      name: 'user',      
+      component: UserProfileView,        
+    },
   ]
 })
 

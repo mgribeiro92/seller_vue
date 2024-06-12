@@ -1,7 +1,8 @@
 import { Auth } from './auth'
 
-async function getProducts(store_id: any, page: any) {
-  const url = import.meta.env.VITE_BASE_URL + '/products/store/' + store_id + '/?page=' + page
+async function getProducts(store_id: any, page: any, filter: any) {
+  const url = import.meta.env.VITE_BASE_URL + '/products/store/' + store_id + '/?page=' + page + filter
+  console.log(url)
   const auth = new Auth()
   const currentUser = auth.currentUser()
   const response = await fetch(
@@ -17,13 +18,33 @@ async function getProducts(store_id: any, page: any) {
   return await response.json()
 }
 
-async function createProduct(product_title: string, product_price: any, store_id: any) {
+// async function getProductsSearch(store_id: any, page: any, filter: any) {
+//   const url = import.meta.env.VITE_BASE_URL + '/products/store/' + store_id + '/?page=' + page + filter
+//   const auth = new Auth()
+//   const currentUser = auth.currentUser()
+//   const response = await fetch(
+//     url, {
+//       method: 'GET',
+//       headers: {
+//         "Accept": "application/json",
+//         "Content-Type": "application/json",
+//         "Authorization": "Bearer" + ' ' + currentUser?.token
+//       },
+//     }
+//   )
+//   return await response.json()
+// }
+
+async function createProduct(product_title: string, product_price: any, product_description: any, product_inventory: any, product_category: any, store_id: any) {
   const auth = new Auth()
   const currentUser = auth.currentUser()
   const body = {
     product: {
       title: product_title,
       price: product_price,
+      description: product_description, 
+      inventory: product_inventory,
+      category: product_category,
       store_id: store_id
     }
   }
@@ -44,13 +65,16 @@ async function createProduct(product_title: string, product_price: any, store_id
   }
 }
 
-async function updateProduct(product_title: any, product_price: number, product_id: any, store_id: any) {
+async function updateProduct(product_title: any, product_price: any, product_inventory: any, product_description: any, product_category: any, product_id: any) {
   const auth = new Auth()
   const currentUser = auth.currentUser()
   const body = {
     product: {
       title: product_title,
-      price: product_price
+      price: product_price,
+      inventory: product_inventory,
+      description: product_description,
+      category: product_category
     }
   }
   const response = await fetch(
@@ -63,9 +87,7 @@ async function updateProduct(product_title: any, product_price: number, product_
     },
     body: JSON.stringify(body)          
   })
-  if(response.status == 200) {    
-    window.location.reload()   
-  }
+  return response
 }
 
 async function deleteProduct(product_id: any) {

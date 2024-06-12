@@ -113,7 +113,7 @@ fetchEventSource (
   <div class="orders">   
     <Message v-if="msg" :message="msg" :alert="alert"/>
     <div class="store-row">
-      <div class="store-name">{{ store.name }} - Orders</div>         
+      <h3>Pedidos</h3>         
     </div>
     <hr>
   </div>  

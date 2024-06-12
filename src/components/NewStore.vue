@@ -1,11 +1,13 @@
 <script setup lang="ts">
 
+import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { stores } from '@/stores'
 import Message from './Message.vue';
 
 const {store_id} = defineProps(['store_id'])
 
+const router = useRouter()
 const fileInput = ref()
 const name_store = ref()
 const description_store = ref()
@@ -33,15 +35,18 @@ async function createStore() {
   if (!name_store.value || !description_store.value || !category_store.value || !cep.value || !address_number.value ) {
     msg.value = "Por favor preencher todos os itens!"
     alert.value = "error"
-  }
-  const response_store = await stores.newStore(name_store.value, description_store.value, category_store.value)
-  const store_id = response_store.id
-  const response_address = await stores.newAddress(store_id, address_street.value, address_number.value, cep.value, address_city.value, address_state)
-  console.log(response_address)
-  if (imagemSelecionada) {
-    stores.uploadImageStore(imagemSelecionada, store_id)
+  } else {
+    const response_store = await stores.newStore(name_store.value, description_store.value, category_store.value)
+    const store_id = response_store.id
+    const response_address = await stores.newAddress(store_id, address_street.value, address_number.value, cep.value, address_city.value, address_state)
+    console.log(response_address)
+    if (imagemSelecionada) {
+      stores.uploadImageStore(imagemSelecionada, store_id)
+    }
+    router.push('/stores/'+ store_id)
   }
 }
+
 
 
 

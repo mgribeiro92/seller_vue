@@ -15,6 +15,7 @@ const logOut = function() {
   console.log('logout chamado')
   auth.signOut()
   router.push('/sign_in')
+  localStorage.removeItem('store')
 }
 
 </script>
@@ -27,6 +28,7 @@ const logOut = function() {
       <li v-if="store_id"><RouterLink :to="{ name: 'store', params: { storeId: store_id }}">Ver Loja</RouterLink></li>
       <li v-if="store_id"><RouterLink :to="{ name: 'products', params: { storeId: store_id }}">Produtos</RouterLink></li>
       <li v-if="store_id"><RouterLink :to="{ name: 'orders', params: { storeId: store_id }}">Pedidos</RouterLink></li> 
+      <li v-if="store_id"><RouterLink :to="{ name: 'user' }">Perfil Usuario</RouterLink></li> 
       <li @click="logOut">Sair</li>
     </ul>
   </div>

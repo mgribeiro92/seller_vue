@@ -7,3 +7,7 @@ export interface Address {
   state: string
 }
 
+export interface UserType {
+  id: number,
+  email: string
+}

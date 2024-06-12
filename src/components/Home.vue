@@ -33,6 +33,7 @@ onMounted(() => {
   <div class="home">
     <Message v-if="msg" :message="msg" :alert="alert"/>
     <Stores />
+
   </div>
 
 

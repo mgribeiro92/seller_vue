@@ -92,12 +92,12 @@ async function deletingStore() {
         <h3>{{ store.name }}</h3>  
       </div>
       <div class="store-edit-destroy">
-        <button class='btn-edit-destroy' @click="update_store = true ">Update</button>
-        <button class='btn-edit-destroy' @click="show_modal = true">Delete</button>
+        <button class='btn' @click="update_store = true ">Update</button>
+        <button class='btn' @click="show_modal = true">Delete</button>
       </div>    
     </div>
     <hr> 
-    <div class="store-info">               
+    <div class="store-info">       
       <div class="store-title">Categoria</div>
       <p>{{ store.category }}</p>
       <div class="store-title">Descrição</div>
@@ -152,6 +152,7 @@ async function deletingStore() {
   .store-title {
     font-size: 20px;
     font-weight: bold;
+    color: gray;
   }
   
   .address-title {
@@ -196,7 +197,7 @@ async function deletingStore() {
     align-items: center;
   }
 
-  .btn-edit-destroy {    
+  /* .btn-edit-destroy {    
 		padding: 0px 10px;
 		margin: 0px 10px;  
 		color: #ed911f;
@@ -211,6 +212,6 @@ async function deletingStore() {
   .btn-edit-destroy:hover {
     color: white;
     background-color: #ed911f;
-  }
+  } */
 
 </style>
