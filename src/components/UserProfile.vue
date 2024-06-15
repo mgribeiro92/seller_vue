@@ -4,6 +4,7 @@ import { Auth } from '@/auth'
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import type { UserType } from '../types'
+import Chat from '../components/Chat.vue'
 
 const auth = new Auth()
 const router = useRouter()
@@ -42,6 +43,8 @@ function deleteUser() {
     <div>Email: {{ user_profile.email }}</div>
     <button @click="deleteUser">Desativar Conta</button>
   </div>
+
+  <Chat/>
 
 </template>
 
