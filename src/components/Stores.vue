@@ -36,7 +36,7 @@ onMounted(async () => {
 })
 
 function storeSelected(store: any) {
-  localStorage.setItem("store", store)
+  sessionStorage.setItem("store", store)
   const url = router.resolve({ name: 'store', params: { storeId: store } }).href
   window.location.href = url
 }

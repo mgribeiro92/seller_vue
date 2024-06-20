@@ -11,3 +11,12 @@ export interface UserType {
   id: number,
   email: string
 }
+
+export interface ChatsRoom {
+  id: number, 
+  buyer_id: number, 
+  buyer_email: string,
+  store_id: number,
+  store_name: string,
+  unread_messages: number
+}

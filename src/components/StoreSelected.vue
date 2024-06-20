@@ -26,7 +26,7 @@ const name_store_edit = defineModel<string>('name_store_edit')
 const auth = new Auth()
 const router = useRouter()
 const route = useRoute()
-const store_id = route.params.storeId
+const store_id = sessionStorage.getItem('store')
 const localhost = import.meta.env.VITE_BASE_URL
 
 onMounted(async () => {
@@ -39,11 +39,15 @@ onMounted(async () => {
 })
 
 async function getStore() {
-  const store_data =  await stores.getStore(store_id)
-  console.log(store_data)
-  store.value = store_data
-  if (store_data.address) {
-    address.value = store_data.address
+  if (store_id) {
+    const store_data =  await stores.getStore(store_id)
+    console.log(store_data)
+    store.value = store_data
+    if (store_data.address) {
+      address.value = store_data.address
+    }
+  } else {
+    router.push('/')
   }
 }
   
@@ -137,6 +141,7 @@ async function deletingStore() {
   .store {
     display: flex;
     flex-direction: column;
+    margin: 10px;
   }
 
   .store-name > img {
@@ -157,6 +162,7 @@ async function deletingStore() {
   
   .address-title {
     font-weight: bold;
+    color: gray
   }
 
   .btn-confirmation {

@@ -61,7 +61,7 @@ async function fetchAddress() {
 
 <template>
   <header>    
-    <div v-if="!address"class="sign-up">
+    <div v-if="!address" class="sign-up">
       <Message v-show="msg" :message="msg" :alert="alert"/>	
       <form class="form-signup" @submit="onSubmit">           
         <h2>Sign Up</h2>                                

@@ -27,7 +27,6 @@ class Auth {
 
 	failure(response: Response, onFailure: (json: any) => void) {
 		response.json().then((json => {
-			console.log(json)
 			onFailure(json)
 		}))				
 	}
@@ -76,7 +75,7 @@ class Auth {
 			headers: {
 				"Accept": "application/json",
 				"Content-Type": "application/json",
-				"X-API-KEY": "fvXfHcO7vr8qIHuCb5wFsLcd8uE="
+				"X-API-KEY": "aVL15qkEoA8Y6tiQ6aXHpmC/t5A="
 			},
 			body: JSON.stringify(body)
 		})	

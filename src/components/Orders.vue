@@ -23,15 +23,19 @@ const alert = ref('')
 const show_order = ref(false)
 const selected_order = ref()
 
-const route = useRoute()
-const store_id = route.params.storeId
+const router = useRouter()
+const store_id = sessionStorage.getItem('store')
 const localhost = "http://127.0.0.1:3000/"
 
 auth.verifyToken()
 try {
   auth.validToken()    
 } finally {
-  getOrders()
+  if (store_id) {
+    getOrders()
+  } else {
+    router.push('/')
+  }
 }
 
 async function getOrders() {
@@ -91,6 +95,7 @@ fetchEventSource (
     onmessage(message) {
       if (message.event === "new-order") {
         let data = JSON.parse(message.data)
+        console.log(data.order)
         console.log(data.order.length)
         if (data.order.length == 0) {
           msg.value = "Loja não tem novos pedidos!"
@@ -116,11 +121,12 @@ fetchEventSource (
       <h3>Pedidos</h3>         
     </div>
     <hr>
-  </div>  
-  <div class="orders-card container">  
-    
+    <!-- <div>Pedidos dos ultimos 3 dias, clique aqui para mudar!</div> -->
+  </div>
+  
+  <div class="orders-card container">
     <div class="card-col">   
-      <h4 class="created">Pago</h4>
+      <h4 class="created">Novos</h4>
       <draggable 
         style="height: 100%" 
         v-model="orders_created" 
