@@ -7,7 +7,7 @@ import StoreSelectedView from '../views/StoreSelectedView.vue'
 import OrdersView from '../views/OrdersView.vue'
 import ProductsView from '../views/ProductsView.vue'
 import UserProfileView from '../views/UserProfileView.vue'
-import Chat from '../components/Chat.vue'
+import Chats from '../components/Chats.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,9 +45,9 @@ const router = createRouter({
       component: OrdersView,        
     },
     {
-      path: '/chat',
-      name: 'chat',      
-      component: Chat,        
+      path: '/chats',
+      name: 'chats',      
+      component: Chats,        
     },
     {
       path: '/user',

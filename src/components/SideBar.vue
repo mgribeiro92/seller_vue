@@ -8,7 +8,7 @@ const auth = new Auth()
 const store_id = ref()
 
 onMounted(async() => {
-  store_id.value = localStorage.getItem('store') 
+  store_id.value = sessionStorage.getItem('store') 
 })
 
 const logOut = function() {
@@ -28,7 +28,8 @@ const logOut = function() {
       <li v-if="store_id"><RouterLink :to="{ name: 'store', params: { storeId: store_id }}">Ver Loja</RouterLink></li>
       <li v-if="store_id"><RouterLink :to="{ name: 'products', params: { storeId: store_id }}">Produtos</RouterLink></li>
       <li v-if="store_id"><RouterLink :to="{ name: 'orders', params: { storeId: store_id }}">Pedidos</RouterLink></li> 
-      <li v-if="store_id"><RouterLink :to="{ name: 'user' }">Perfil Usuario</RouterLink></li> 
+      <li v-if="store_id"><RouterLink :to="{ name: 'chats' }">Chats</RouterLink></li>
+      <li v-if="store_id"><RouterLink :to="{ name: 'user' }">Perfil Usuario</RouterLink></li>
       <li @click="logOut">Sair</li>
     </ul>
   </div>
@@ -61,6 +62,10 @@ const logOut = function() {
     margin-bottom: 10px;
     text-align: center;
     padding-bottom: 5px;
+  }
+
+  li:hover {
+    cursor: pointer;
   }
 
   a {

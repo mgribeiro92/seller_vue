@@ -1,19 +1,40 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { chats } from '@/chats'
 import NavBar from './components/Navbar.vue'
 import SideBar from './components/SideBar.vue'
+import Chat from './components/Chat.vue'
 
-const selected_color = ref()
+const selected_color = ref('')
+const show_chat = ref(false);
+const show_icon_chat = ref(false)
+const chat_info = ref()
+const store_id = sessionStorage.getItem('store')
 
-function color(selectedColor: any) {
-  console.log('ta chamando a mudanca de cor no app')
-  console.log(selectedColor)
-  // selected_color.value = selectedColor
+onMounted(() => {
+  color()
+  if (store_id) {
+    show_icon_chat.value = true
+  }
+})
+
+function closeChat() {
+  show_chat.value = !show_chat.value
+}
+
+async function openChat() {
+  chat_info.value = await chats.lastChat(store_id)
+  show_chat.value = !show_chat.value;
+}
+
+
+function color() {
+  const color = sessionStorage.getItem('tema')
   let corHex;
-    switch (selectedColor) {
+    switch (color) {
       case 'Verde':
-        corHex = '#002600';
+        corHex = '#008000';
         break;
       case 'Vermelho':
         corHex = '#b20000';
@@ -28,7 +49,7 @@ function color(selectedColor: any) {
         corHex = '#FFA500';
         break
       default:
-        corHex = '#595959'; // Azul por padrão
+        corHex = '#595959'; 
     }
     document.documentElement.style.setProperty('--cor-dinamica', corHex)
 }
@@ -43,7 +64,12 @@ function color(selectedColor: any) {
       <NavBar v-if="$route.meta.showNavBar != false" @changeColor="color"/>
       <div class="conteudo"><RouterView /></div>   
     </div>
-
+    <button v-if="show_icon_chat" class="floating-button" @click="openChat">
+      Chat
+    </button>
+    <div v-if="show_chat && $route.meta.showNavBar != false" class="chat-wrapper">
+      <Chat :chat_info="chat_info" @closeChat="closeChat"/>
+    </div>
   </header>  
 
   
@@ -68,9 +94,43 @@ function color(selectedColor: any) {
   h3 {
     color: gray
   }
+
+  .floating-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: var(--cor-dinamica);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .chat-wrapper {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    min-width: 400px; 
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
   
+  .chat-info {
+    color: var(--cor-dinamica);
+    border-bottom: 2px solid var(--cor-dinamica);
+  }
+
   .store-name { 
     font-size: 25px;
+  }
+
+  .open-chat {
+    color: var(--cor-dinamica)
   }
 
   .sidebar {

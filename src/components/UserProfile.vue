@@ -17,7 +17,6 @@ onMounted(async () => {
   const user_info = await auth.userProfile()
   user_profile.value = user_info
   user_id.value = user_info.id
-
 })
 
 
@@ -25,7 +24,8 @@ function deleteUser() {
   console.log('excluir usuario')
   if (confirm('Você tem certeza que deseja desativar sua conta?\nTodas as suas lojas também vão ser desativadas, assim como todos os produtos')) {
     auth.deleteUser(user_id.value)
-    // router.push('/sign_in')
+    auth.signOut
+    router.push('/sign_in')
     alert('Conta desativada com sucesso!')
   } else {
     alert('Ação cancelada!')
@@ -38,10 +38,10 @@ function deleteUser() {
 <template>
 
   <div class="user-info">
-    <div class="user">Perfil do Usúario</div>
-    <div>Email: {{ user_profile.email }}</div>
-    <button @click="deleteUser">Desativar Conta</button>
+    <h3>Perfil do Usúario</h3>
+    <div>Email: {{ user_profile.email }}</div>   
   </div>
+  <button class="btn" @click="deleteUser">Desativar Conta</button>
 
 </template>
 
@@ -50,9 +50,6 @@ function deleteUser() {
   .user-info {
     margin: 10px;
   }
-  .user {
-    font-size: 20px;
-    font-weight: bold;
-  }
+
 
 </style>

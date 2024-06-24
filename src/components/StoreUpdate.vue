@@ -49,32 +49,14 @@ function handleFileInputChange() {
 const emit = defineEmits(['showStore']);
 async function updateStore(){
   const response_store = await stores.editStore(store_id.value, name_store.value, description_store.value, category_store.value)
-  const response_address = await stores.updateAddress(address_id.value, address_street.value, address_number.value, cep.value, address_city.value, address_state)
+  const response_address = await stores.updateAddress(address_id.value, address_street.value, address_number.value, cep.value, address_city.value, address_state.value)
+  console.log(response_address)
   if (imagemSelecionada) {
+    console.log('ta passando na imagem')
     stores.uploadImageStore(imagemSelecionada, store.id)
   }
   emit('showStore');
 }
-
-// async function createStore() {
-//   console.log('criando a loja')
-//   if (!name_store.value || !description_store.value || !category_store.value || !cep.value || !address_number.value ) {
-//     msg.value = "Por favor preencher todos os itens!"
-//     alert.value = "error"
-//   }
-//   const response_store = await stores.newStore(name_store.value, description_store.value, category_store.value)
-//   const store_id = response_store.id
-//   const response_address = await stores.newAddress(store_id, address_street.value, address_number.value, cep.value, address_city.value, address_state)
-//   console.log(response_address)
-//   if (imagemSelecionada) {
-//     stores.uploadImageStore(imagemSelecionada, store_id)
-//   }
-// }
-
-
-// function uploadImage() {
-//   stores.uploadImageStore(imagemSelecionada, store_id)
-// }
 
 async function fetchAddress() {
   if (cep.value.length == 8) {
@@ -137,7 +119,7 @@ async function fetchAddress() {
         <div class="address-number">
           <div class="form-outline mb-2 logradouro">
             <label>Logradouro</label>
-            <input class="form-control" type="text" :placeholder="address_street" readonly>
+            <input class="form-control" type="text" v-model="address_street">
           </div>
           <div class="form-outline mb-2 number">
             <label>Número</label>
@@ -147,11 +129,11 @@ async function fetchAddress() {
         <div class="address-number">
           <div class="form-outline mb-2 logradouro">
             <label>Cidade</label>
-            <input class="form-control" type="text" :placeholder="address_city" readonly>
+            <input class="form-control" type="text" v-model="address_city">
           </div>
           <div class="form-outline mb-2 number">
             <label>Estado</label>
-            <input class="form-control" type="text" :placeholder="address_state" readonly>
+            <input class="form-control" type="text" v-model="address_state">
           </div>          
         </div>  
       </div>   

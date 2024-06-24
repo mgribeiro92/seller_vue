@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue'
 import { products } from '@/products'
 import { useRouter, useRoute } from 'vue-router';
 import Message from './Message.vue';
+import router from '@/router';
 
 const route = useRoute()
 const update_product = ref()
@@ -25,13 +26,17 @@ const new_product_inventory = ref(0)
 const msg = ref('')
 const alert = ref('')
 const localhost = import.meta.env.VITE_BASE_URL
-const store_id = route.params.storeId
+const store_id = sessionStorage.getItem('store')
 
 const total_pages = ref()
 const current_page = ref(1)
 
 onMounted(async () => {
-  getProducts()
+  if (store_id) {
+    getProducts()
+  } else {
+    router.push('/')
+  }
 })
 
 async function getProducts() {
@@ -205,13 +210,11 @@ async function filterStore(filter: any) {
         </tbody>
       </table> 
       <div class="pagination" v-show="total_pages > 1">
-        <button @click="prevPage" :disabled="current_page == 1">Anterior</button>
+        <button class="btn" @click="prevPage" :disabled="current_page == 1">Anterior</button>
         <span>{{ current_page }}</span>
-        <button @click="nextPage" :disabled="current_page == total_pages">Próxima</button>
+        <button class="btn" @click="nextPage" :disabled="current_page == total_pages">Próxima</button>
       </div>  
-    </div>
-    
-    
+    </div> 
 
     <div class="container" v-show="new_product == true">
       <form class="form-new-product" @submit.prevent="newProduct()">
@@ -254,6 +257,10 @@ async function filterStore(filter: any) {
     border-radius: 50%;
   }
 
+  h5 {
+    color: gray;
+  }
+
   .text-gray {
     color: gray;
   }
@@ -277,6 +284,7 @@ async function filterStore(filter: any) {
     display: flex;
     justify-content: center;
     gap: 20px;
+    margin: 20px;
   }
   
   .categories {
