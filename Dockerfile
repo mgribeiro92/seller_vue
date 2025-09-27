@@ -2,7 +2,7 @@
 FROM node:16
 
 # Define o diretório de trabalho
-WORKDIR /app
+WORKDIR /seller
 
 # Copia o package.json e o package-lock.json
 COPY package*.json ./

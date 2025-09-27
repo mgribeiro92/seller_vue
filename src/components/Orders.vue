@@ -131,7 +131,7 @@ fetchEventSource (
         style="height: 100%" 
         v-model="orders_created" 
         :itemKey="(item: any) => item" 
-        id="created" 
+        id=" " 
         :group="{ name: 'orders', put: false }"
         :animation="300" 
         @add="dragAdd">

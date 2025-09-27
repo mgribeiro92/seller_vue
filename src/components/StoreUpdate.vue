@@ -75,8 +75,6 @@ async function fetchAddress() {
     }   
   }
 }
-
-
 </script>
 
 <template>

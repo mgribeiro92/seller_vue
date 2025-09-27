@@ -32,26 +32,26 @@ async function openChat() {
 function color() {
   const color = sessionStorage.getItem('tema')
   let corHex;
-    switch (color) {
-      case 'Verde':
-        corHex = '#008000';
-        break;
-      case 'Vermelho':
-        corHex = '#b20000';
-        break;
-      case 'Azul':
-        corHex = '#00004c';
-        break;
-      case 'Roxo':
-        corHex = '#800080';
-        break
-      case 'Laranja':
-        corHex = '#FFA500';
-        break
-      default:
-        corHex = '#595959'; 
-    }
-    document.documentElement.style.setProperty('--cor-dinamica', corHex)
+  switch (color) {
+    case 'Verde':
+      corHex = '#008000';
+      break;
+    case 'Vermelho':
+      corHex = '#b20000';
+      break;
+    case 'Azul':
+      corHex = '#00004c';
+      break;
+    case 'Roxo':
+      corHex = '#800080';
+      break
+    case 'Laranja':
+      corHex = '#FFA500';
+      break
+    default:
+      corHex = '#595959'; 
+  }
+  document.documentElement.style.setProperty('--cor-dinamica', corHex)
 }
 
 </script>
